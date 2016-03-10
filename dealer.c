@@ -1268,6 +1268,7 @@ void setup_action() {
             case ACT_AVERAGE:
                 break;
             case ACT_FREQUENCY:
+                acp->ac_u.acu_f.acuf_entries = 0;
                 acp->ac_u.acu_f.acuf_freqs =
                     (long *)mycalloc(acp->ac_u.acu_f.acuf_highbnd - acp->ac_u.acu_f.acuf_lowbnd + 1, sizeof(long));
                 break;
@@ -1342,6 +1343,7 @@ void action() {
                     acp->ac_u.acu_f.acuf_oflow++;
                 else
                     acp->ac_u.acu_f.acuf_freqs[expr - acp->ac_u.acu_f.acuf_lowbnd]++;
+                acp->ac_u.acu_f.acuf_entries++;
                 break;
             case ACT_FREQUENCY2D:
                 expr = evaltree(acp->ac_expr1);
@@ -1401,6 +1403,10 @@ void printhands(int boardno, deal *dealp, int player, int nhands) {
     printf("\n");
 }
 
+float percent(int n, int d) {
+    return 100 * n / (float)d;
+}
+
 void cleanup_action() {
     struct action *acp;
     int player, i;
@@ -1434,15 +1440,18 @@ void cleanup_action() {
                     printf("%s: ", acp->ac_str1);
                 printf("%g\n", (double)acp->ac_int1 / nprod);
                 break;
-            case ACT_FREQUENCY:
+            case ACT_FREQUENCY: {
+                struct acuft *f = &acp->ac_u.acu_f;
                 printf("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
-                if (acp->ac_u.acu_f.acuf_uflow)
-                    printf("Low\t%8ld\n", acp->ac_u.acu_f.acuf_uflow);
-                for (i = acp->ac_u.acu_f.acuf_lowbnd; i <= acp->ac_u.acu_f.acuf_highbnd; i++)
-                    printf("%5d\t%8ld\n", i, acp->ac_u.acu_f.acuf_freqs[i - acp->ac_u.acu_f.acuf_lowbnd]);
-                if (acp->ac_u.acu_f.acuf_oflow)
-                    printf("High\t%8ld\n", acp->ac_u.acu_f.acuf_oflow);
+                if (f->acuf_uflow)
+                    printf("Low  \t%8ld\t%5.2f %%\n", f->acuf_uflow, percent(f->acuf_uflow, f->acuf_entries));
+                for (i = f->acuf_lowbnd; i <= f->acuf_highbnd; i++)
+                    printf("%5d\t%8ld\t%5.2f %%\n", i, f->acuf_freqs[i - f->acuf_lowbnd],
+                           percent(f->acuf_freqs[i - f->acuf_lowbnd], f->acuf_entries));
+                if (f->acuf_oflow)
+                    printf("High \t%8ld\t%5.2f %%\n", f->acuf_oflow, percent(f->acuf_oflow, f->acuf_entries));
                 break;
+            }
             case ACT_FREQUENCY2D: {
                 int j, n = 0, low1 = 0, high1 = 0, low2 = 0, high2 = 0, sumrow, sumtot, sumcol;
                 printf("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");

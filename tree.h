@@ -109,6 +109,7 @@ struct acuft {
     long acuf_highbnd;
     long acuf_uflow;
     long acuf_oflow;
+    long acuf_entries;
     long *acuf_freqs;
 };
 

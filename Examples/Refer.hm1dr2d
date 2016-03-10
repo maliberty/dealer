@@ -1,10 +1,10 @@
 e3352: 0
 Frequency spades:
-    0	    1126
-    1	   16213
-    2	   82661
-    3	       0
+    0	    1126	 1.13 %
+    1	   16213	16.21 %
+    2	   82661	82.66 %
+    3	       0	 0.00 %
 Generated 8237581 hands
 Produced 100000 hands
 Initial random seed 1
-Time needed   18.468 sec
+Time needed    9.779 sec
