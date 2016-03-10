@@ -1,5 +1,6 @@
 /* $Header: /home/henk/CVS/dealer/scan.l,v 1.8 1999/07/05 19:44:30 henk Exp $ */
 %x COMMENT
+%option nounput
 %%
 "&&"            return(AND2);
 and             return(AND2);
@@ -46,12 +47,12 @@ printes         return(PRINTES);
 evalcontract    return(EVALCONTRACT);
 nv              { yylval.y_int = NON_VUL; return VULN; }
 vul             { yylval.y_int = VUL; return VULN; }
-ns              { yylval.y_int = VULNERABLE_NS; return VULNERABLE; }
-NS              { yylval.y_int = VULNERABLE_NS; return VULNERABLE; }
-ew              { yylval.y_int = VULNERABLE_EW; return VULNERABLE; }
-EW              { yylval.y_int = VULNERABLE_EW; return VULNERABLE; }
-all             { yylval.y_int = VULNERABLE_ALL; return VULNERABLE; }
-none            { yylval.y_int = VULNERABLE_NONE; return VULNERABLE; }
+ns              { yylval.y_int = VULNERABLE_NS; return VULNERABLE_SIDE; }
+NS              { yylval.y_int = VULNERABLE_NS; return VULNERABLE_SIDE; }
+ew              { yylval.y_int = VULNERABLE_EW; return VULNERABLE_SIDE; }
+EW              { yylval.y_int = VULNERABLE_EW; return VULNERABLE_SIDE; }
+all             { yylval.y_int = VULNERABLE_ALL; return VULNERABLE_SIDE; }
+none            { yylval.y_int = VULNERABLE_NONE; return VULNERABLE_SIDE; }
 average         return(AVERAGE);
 frequency       return(FREQUENCY);
 north           { yylval.y_int = COMPASS_NORTH; return COMPASS; }

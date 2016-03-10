@@ -22,6 +22,9 @@ void  clearpointcount_alt(int);
 void  pointcount(int,int);
 void* mycalloc(int,size_t);
 int   make_contract (char, char);
+int d2n(char s[4]);
+int yylex();
+extern char *yytext;
 
 int predeal_compass;     /* global variable for predeal communication */
 
@@ -49,38 +52,38 @@ void new_var(char *s, struct tree *t) ;
         char    y_distr[4];
 }
 
-%left QUERY, COLON
+%left QUERY COLON
 %left OR2
 %left AND2
-%left CMPEQ, CMPNE
-%left CMPLT, CMPLE, CMPGT, CMPGE
-%left ARPLUS, ARMINUS
-%left ARTIMES, ARDIVIDE, ARMOD
+%left CMPEQ CMPNE
+%left CMPLT CMPLE CMPGT CMPGE
+%left ARPLUS ARMINUS
+%left ARTIMES ARDIVIDE ARMOD
 %nonassoc NOT
 
-%token GENERATE, PRODUCE, HCP, SHAPE, ANY, EXCEPT, CONDITION, ACTION
-%token PRINT, PRINTALL,PRINTEW, PRINTPBN, PRINTCOMPACT, PRINTONELINE
-%token AVERAGE, HASCARD, FREQUENCY, PREDEAL, POINTCOUNT, ALTCOUNT
-%token CONTROL, LOSER, DEALER, VULNERABLE
-%token QUALITY, CCCC
-%token TRICKS, NOTRUMPS, NORTHSOUTH, EASTWEST
-%token EVALCONTRACT, ALL, NONE, SCORE, IMPS, RND
-%token PT0,PT1,PT2,PT3,PT4,PT5,PT6,PT7,PT8,PT9,PRINTES
+%token GENERATE PRODUCE HCP SHAPE ANY EXCEPT CONDITION ACTION
+%token PRINT PRINTALL PRINTEW PRINTPBN PRINTCOMPACT PRINTONELINE
+%token AVERAGE HASCARD FREQUENCY PREDEAL POINTCOUNT ALTCOUNT
+%token CONTROL LOSER DEALER VULNERABLE
+%token QUALITY CCCC
+%token TRICKS NOTRUMPS NORTHSOUTH EASTWEST
+%token EVALCONTRACT ALL NONE SCORE IMPS RND
+%token PT0 PT1 PT2 PT3 PT4 PT5 PT6 PT7 PT8 PT9 PRINTES
 
 %token <y_int> NUMBER
 %token <y_str> HOLDING
 %token <y_str> STRING
 %token <y_str> IDENT
 %token <y_int> COMPASS
-%token <y_int> VULNERABLE
+%token <y_int> VULNERABLE_SIDE
 %token <y_int> VULN
 %token <y_int> SUIT
 %token <y_int> CARD
 %token <y_int> CONTRACT
-%token <y_distr> DISTR, DISTR_OR_NUMBER
+%token <y_distr> DISTR DISTR_OR_NUMBER
 
 %type <y_tree>  expr
-%type <y_int> number, compass, printlist, shlprefix, any, vulnerable
+%type <y_int> number compass printlist shlprefix any vulnerable
 %type <y_distr> shape
 %type <y_action> actionlist action
 %type <y_expr> exprlist
@@ -154,7 +157,7 @@ compass
         ;
 
 vulnerable
-        : VULNERABLE
+        : VULNERABLE_SIDE
                 { extern int use_vulnerable[NSUITS]; use_vulnerable[$1] = 1; $$= $1; }
         ;
 
@@ -433,7 +436,7 @@ void new_var(char *s, struct tree *t)
 int lino=1;
 
 void yyerror( char *s) {
-        fprintf(stderr, "line %d: %s\n", lino, s);
+        fprintf(stderr, "line %d: %s at %s\n", lino, s, yytext);
         exit(-1);
 }
 
@@ -465,8 +468,7 @@ int perm[24][4] = {
 };
 
 int shapeno;
-void insertshape(s, any, neg_shape)
-char s[4];
+void insertshape(char s[4], int any, int neg_shape)
 {
         int i,j,p;
         int xcount=0, ccount=0;
@@ -513,29 +515,21 @@ int d2n(char s[4]) {
         return atoi(copys);
 }
 
-struct tree *newtree(type, p1, p2, i1, i2)
-int type;
-struct tree *p1, *p2;
-int i1,i2;
+struct tree *newtree(int type, struct tree *p1, struct tree *p2, int i1, int i2)
 {
         /* char *mycalloc(); */
         struct tree *p;
 
-        p = (struct tree *) mycalloc(1, sizeof(*p));
-        p->tr_type = type;
-        p->tr_leaf1 = p1;
-        p->tr_leaf2 = p2;
-        p->tr_int1 = i1;
-        p->tr_int2 = i2;
-        return p;
+    p = (struct tree *)mycalloc(1, sizeof(*p));
+    p->tr_type = type;
+    p->tr_leaf1 = p1;
+    p->tr_leaf2 = p2;
+    p->tr_int1 = i1;
+    p->tr_int2 = i2;
+    return p;
 }
 
-struct action *newaction(type, p1, s1, i1, p2)
-int type;
-struct tree *p1;
-char *s1;
-int i1;
-struct tree *p2;
+struct action *newaction(int type, struct tree *p1, char *s1, int i1, struct tree *p2)
 {
         /* char *mycalloc(); */
         struct action *a;
@@ -568,8 +562,7 @@ struct expr *newexpr(struct tree* tr1, char* ch1, struct expr* ex1)
     }
 }
 
-char *mystrcpy(s)
-char *s;
+char *mystrcpy(char *s)
 {
         char *cs;
         /* char *mycalloc(); */
@@ -579,8 +572,7 @@ char *s;
         return cs;
 }
 
-void predeal_holding(compass, holding)
-char *holding;
+void predeal_holding(int compass, char *holding)
 {
         char suit;
 
