@@ -9,10 +9,10 @@ PROGRAM  = dealer
 TARFILE  = ${PROGRAM}.tar
 GZIPFILE = ${PROGRAM}.tar.gz
 
-SRC  = dealer.c pbn.c  c4.c getopt.c pointcount.c
+SRC  = dealer.c pbn.c c4.c getopt.c pointcount.c
 LSRC = scan.l
 YSRC = defs.y
-HDR  = dealer.h tree.h
+HDR  = c4.h dealer.h getopt.h pbn.h pointcount.h tree.h
 
 OBJ  = dealer.o defs.o pbn.o c4.o getopt.o pointcount.o
 LOBJ = scan.c
@@ -40,6 +40,9 @@ tarfile: tarclean
 
 test: dealer
 	${MAKE} -C Examples test
+
+format:
+	clang-format -i $(SRC) $(HDR)
 
 #
 # Lex
