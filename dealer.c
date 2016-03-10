@@ -52,12 +52,6 @@ void yyerror(char *);
 #define RANDBITS 16
 #define NRANDVALS (1 << RANDBITS)
 
-#ifdef MSDOS
-char *crlf = "\r\n";
-#else
-char *crlf = "\n";
-#endif /* MSDOS */
-
 /* Global variables */
 
 enum { STAT_MODE, EXHAUST_MODE };
@@ -233,11 +227,11 @@ int score(int vuln, int suit, int level, int tricks) {
 void showevalcontract(int nh) {
     int s, l, i, v;
     for (v = 0; v < 2; v++) {
-        printf("%sVulnerable%s", v ? "" : "Not ", crlf);
+        printf("%sVulnerable\n", v ? "" : "Not ");
         printf("   ");
         for (l = 1; l < 8; l++)
             printf("  %d       ", l);
-        printf("%s", crlf);
+        printf("\n");
         for (s = 0; s < 5; s++) {
             printf("%c: ", "cdhsn"[s]);
             for (l = 1; l < 8; l++) {
@@ -248,9 +242,9 @@ void showevalcontract(int nh) {
                 }
                 printf("%4d/%4d ", t / nh, tn / nh);
             }
-            printf("%s", crlf);
+            printf("\n");
         }
-        printf("%s", crlf);
+        printf("\n");
     }
 }
 
@@ -294,38 +288,6 @@ int true_dd(deal d, int l, int c) {
            we have to subtract 13 from that number. */
         return ((l == 0) || (l == 2)) ? 13 - resu : resu;
     } else {
-#ifdef MSDOS
-        /* Ugly fix for MSDOS. Requires a file called in.txt and will create the
-           files tst.pbn and out.txt. Note that we need not user crlf here, as it's
-           only dealer that will read the files anyway, Micke Hovmöller 990310 */
-        FILE *f;
-        char tn1[] = "tst.pbn";
-        char tn2[] = "out.txt";
-        char res;
-
-        f = fopen(tn1, "w+");
-        if (f == 0)
-            error("Can't open temporary file");
-        fprintcompact(f, d, 0);
-        /* Write the player to lead and strain. Note that since the player to lead
-           sits _behind_ declarer, the array is "eswn" instead of "nesw".
-           /Micke Hovmöller 990312 */
-        fprintf(f, "%c %c\n", "eswn"[l], "cdhsn"[c]);
-        fclose(f);
-
-        fflush(stdout);
-        system("bridge.exe < in.txt > out.txt");
-        fflush(stdout);
-        f = fopen(tn2, "r");
-        if (f == 0)
-            error("Can't read output of analysis");
-
-        fscanf(f, "%*[^\n]\nEnter argument line: %c", &res);
-        fclose(f);
-        /* This will get the number of tricks EW can get.  If the user wanted NW,
-           we have to subtract 13 from that number. */
-        return ((l == 1) || (l == 3)) ? 13 - trix(res) : trix(res);
-#else
         FILE *f;
         char cmd[1024];
         char tn1[256], tn2[256];
@@ -350,7 +312,6 @@ int true_dd(deal d, int l, int c) {
         /* This will get the number of tricks EW can get.  If the user wanted NW,
            we have to subtract 13 from that number. */
         return ((l == 1) || (l == 3)) ? 13 - trix(res) : trix(res);
-#endif /* MSDOS */
     }
 }
 
@@ -363,7 +324,7 @@ void evalcontract() {
 }
 
 void error(char *s) {
-    fprintf(stderr, "%s%s", s, crlf);
+    fprintf(stderr, "%s\n", s);
     exit(10);
 }
 
@@ -909,14 +870,14 @@ void exh_get2players(void) {
             if (use_compass[player]) {
                 /* We refuse to compute anything for a player who has already his (her)
                    13 cards */
-                fprintf(stderr, "Exhaust-mode error: cannot compute anything for %s (known hand)%s",
-                        player_name[player], crlf);
+                fprintf(stderr, "Exhaust-mode error: cannot compute anything for %s (known hand)\n",
+                        player_name[player]);
                 exit(-1); /*NOTREACHED */
             }
         } else {
             if (player_bit == 2) {
                 /* Exhaust mode only if *exactly* 2 hands have unknown cards */
-                fprintf(stderr, "Exhaust-mode error: more than 2 unknown hands...%s", crlf);
+                fprintf(stderr, "Exhaust-mode error: more than 2 unknown hands...\n");
                 exit(-1); /*NOTREACHED */
             }
             exh_player[player_bit++] = player;
@@ -924,7 +885,7 @@ void exh_get2players(void) {
     }
     if (player_bit < 2) {
         /* Exhaust mode only if *exactly* 2 hands have unknown cards */
-        fprintf(stderr, "Exhaust-mode error: less than 2 unknown hands...%s", crlf);
+        fprintf(stderr, "Exhaust-mode error: less than 2 unknown hands...\n");
         exit(-1); /*NOTREACHED */
     }
 }
@@ -1472,7 +1433,7 @@ void cleanup_action() {
                 break;
             case ACT_FREQUENCY2D: {
                 int j, n = 0, low1 = 0, high1 = 0, low2 = 0, high2 = 0, sumrow, sumtot, sumcol;
-                printf("Frequency %s:%s", acp->ac_str1 ? acp->ac_str1 : "", crlf);
+                printf("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
                 high1 = acp->ac_u.acu_f2d.acuf_highbnd_expr1;
                 high2 = acp->ac_u.acu_f2d.acuf_highbnd_expr2;
                 low1 = acp->ac_u.acu_f2d.acuf_lowbnd_expr1;
@@ -1480,7 +1441,7 @@ void cleanup_action() {
                 printf("        Low");
                 for (j = 1; j < (high2 - low2) + 2; j++)
                     printf(" %6d", j + low2 - 1);
-                printf("   High    Sum%s", crlf);
+                printf("   High    Sum\n");
                 sumtot = 0;
                 for (i = 0; i < (high1 - low1) + 3; i++) {
                     sumrow = 0;
@@ -1495,7 +1456,7 @@ void cleanup_action() {
                         sumrow += n;
                         printf(" %6d", n);
                     }
-                    printf(" %6d%s", sumrow, crlf);
+                    printf(" %6d\n", sumrow);
                     sumtot += sumrow;
                 }
                 printf("Sum ");
@@ -1505,7 +1466,7 @@ void cleanup_action() {
                         sumcol += acp->ac_u.acu_f2d.acuf_freqs[(high2 - low2 + 3) * i + j];
                     printf(" %6d", sumcol);
                 }
-                printf(" %6d%s%s", sumtot, crlf, crlf);
+                printf(" %6d\n\n", sumtot);
             }
         }
     }
@@ -1730,8 +1691,8 @@ int main(int argc, char **argv) {
         printf("Generated %d hands\n", ngen);
         printf("Produced %d hands\n", nprod);
         printf("Initial random seed %lu\n", seed);
-        printf("Time needed %8.3f sec%s",
-               (tvstop.tv_sec + tvstop.tv_usec / 1000000.0 - (tvstart.tv_sec + tvstart.tv_usec / 1000000.0)), crlf);
+        printf("Time needed %8.3f sec\n",
+               (tvstop.tv_sec + tvstop.tv_usec / 1000000.0 - (tvstart.tv_sec + tvstart.tv_usec / 1000000.0)));
     }
     return 0;
 }
