@@ -117,8 +117,6 @@ def
                 { clearpointcount_alt($2); pointcount_index=12;} pointcountargs
         | CONDITION expr
                 { extern struct tree *decisiontree; decisiontree = $2; }
-        | expr
-                { extern struct tree *decisiontree; decisiontree = $1; }
         | IDENT '=' expr
                 { new_var($1, $3); }
         | ACTION actionlist
