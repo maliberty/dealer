@@ -38,6 +38,9 @@ DEFUN_VOID(gnurand)
 }
 */
 
+const int shift = 8 * (sizeof(long) - sizeof(int));
+
 int gnurand() {
-    return (int)__random();
+    long r = __random();
+    return (int) (r >> shift);
 }
