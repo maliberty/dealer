@@ -9,7 +9,6 @@ struct tree {
     struct tree *tr_leaf1, *tr_leaf2;
     int tr_int1;
     int tr_int2;
-    int tr_int3;
 };
 
 struct expr {
