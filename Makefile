@@ -1,7 +1,7 @@
 # $Header: /home/henk/CVS/dealer/Makefile,v 1.15 1999/08/05 19:57:44 henk Exp $
 
 CC      = gcc
-CFLAGS = -Wall -pedantic -O2 -I. -DNDEBUG -c
+CFLAGS = -Wall -pedantic -O2 -I. -DNDEBUG -DYY_NO_INPUT -Wno-deprecated-declarations -c
 FLEX    = flex
 YACC    = yacc
 
@@ -61,16 +61,6 @@ format:
 # C-code
 #
 .c.o:
-	${CC} ${CFLAGS} -o $@ $<
+	${CC} ${CFLAGS} -o $@ -MMD -MP $<
 
-# 
-# File dependencies
-#
-scan.c: scan.l
-defs.c: scan.c defs.y
-dealer.o: tree.h scan.l dealer.h defs.c scan.c 
-pbn.o: tree.h scan.l dealer.h
-defs.o:	tree.h
-c4.o: c4.c  c4.h
-getopt.o: getopt.h
-pointcount.o: pointcount.h
+-include $(wildcard *.d)
