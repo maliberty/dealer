@@ -30,79 +30,76 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
    DEFUN(name, arglist, args)
 
-	Defines function NAME.
+        Defines function NAME.
 
-	ARGLIST lists the arguments, separated by commas and enclosed in
-	parentheses.  ARGLIST becomes the argument list in traditional C.
+        ARGLIST lists the arguments, separated by commas and enclosed in
+        parentheses.  ARGLIST becomes the argument list in traditional C.
 
-	ARGS list the arguments with their types.  It becomes a prototype in
-	ANSI C, and the type declarations in traditional C.  Arguments should
-	be separated with `AND'.  For functions with a variable number of
-	arguments, the last thing listed should be `DOTS'.
+        ARGS list the arguments with their types.  It becomes a prototype in
+        ANSI C, and the type declarations in traditional C.  Arguments should
+        be separated with `AND'.  For functions with a variable number of
+        arguments, the last thing listed should be `DOTS'.
 
    DEFUN_VOID(name)
 
-	Defines a function NAME, which takes no arguments.
+        Defines a function NAME, which takes no arguments.
 
    EXFUN(name, prototype)
 
-	Is used in an external function declaration.
-	In ANSI C it is `NAMEPROTOTYPE' (so PROTOTYPE should be enclosed in
-	parentheses).  In traditional C it is `NAME()'.
-	For a function that takes no arguments, PROTOTYPE should be `(NOARGS)'.
+        Is used in an external function declaration.
+        In ANSI C it is `NAMEPROTOTYPE' (so PROTOTYPE should be enclosed in
+        parentheses).  In traditional C it is `NAME()'.
+        For a function that takes no arguments, PROTOTYPE should be `(NOARGS)'.
 
     For example:
-	extern int EXFUN(printf, (CONST char *format DOTS));
-	int DEFUN(fprintf, (stream, format),
-		  FILE *stream AND CONST char *format DOTS) { ... }
-	void DEFUN_VOID(abort) { ... }
+        extern int EXFUN(printf, (CONST char *format DOTS));
+        int DEFUN(fprintf, (stream, format),
+                  FILE *stream AND CONST char *format DOTS) { ... }
+        void DEFUN_VOID(abort) { ... }
 */
 
-#ifndef	_ANSIDECL_H
+#ifndef _ANSIDECL_H
 
-#define	_ANSIDECL_H	1
-
+#define _ANSIDECL_H 1
 
 /* Every source file includes this file,
    so they will all get the switch for lint.  */
 /* LINTLIBRARY */
 
+#ifdef __STDC__
 
-#ifdef	__STDC__
+#define PTR void *
+#define PTRCONST void *CONST
+#define LONG_DOUBLE long double
 
-#define	PTR		void *
-#define	PTRCONST	void *CONST
-#define	LONG_DOUBLE	long double
+#define AND ,
+#define NOARGS void
+#define CONST const
+#define VOLATILE volatile
+#define SIGNED signed
+#define DOTS , ...
 
-#define	AND		,
-#define	NOARGS		void
-#define	CONST		const
-#define	VOLATILE	volatile
-#define	SIGNED		signed
-#define	DOTS		, ...
+#define EXFUN(name, proto) name proto
+#define DEFUN(name, arglist, args) name(args)
+#define DEFUN_VOID(name) name(NOARGS)
 
-#define	EXFUN(name, proto)		name proto
-#define	DEFUN(name, arglist, args)	name(args)
-#define	DEFUN_VOID(name)		name(NOARGS)
+#else /* Not ANSI C.  */
 
-#else	/* Not ANSI C.  */
+#define PTR char *
+#define PTRCONST PTR
+#define LONG_DOUBLE double
 
-#define	PTR		char *
-#define	PTRCONST	PTR
-#define	LONG_DOUBLE	double
+#define AND ;
+#define NOARGS
+#define CONST
+#define VOLATILE
+#define SIGNED
+#define DOTS
 
-#define	AND		;
-#define	NOARGS
-#define	CONST
-#define	VOLATILE
-#define	SIGNED
-#define	DOTS
+#define EXFUN(name, proto) name()
+#define DEFUN(name, arglist, args) name arglist args;
+#define DEFUN_VOID(name) name()
 
-#define	EXFUN(name, proto)		name()
-#define	DEFUN(name, arglist, args)	name arglist args;
-#define	DEFUN_VOID(name)		name()
+#endif /* ANSI C.  */
 
-#endif	/* ANSI C.  */
-
-
-#endif	/* ansidecl.h	*/
+#endif /* ansidecl.h	*/

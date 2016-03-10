@@ -25,11 +25,10 @@ Cambridge, MA 02139, USA.  */
 #include <stdlib.h>
 */
 
-#undef	rand
+#undef rand
 #undef __random
 
 long int DEFUN_VOID(__random);
-
 
 /* Return a random integer between 0 and RAND_MAX.  */
 /* int
@@ -39,8 +38,6 @@ DEFUN_VOID(gnurand)
 }
 */
 
-
-int gnurand () {
-   return (int) __random(); }
-
-
+int gnurand() {
+    return (int)__random();
+}

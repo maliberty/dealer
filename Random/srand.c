@@ -22,12 +22,10 @@ Cambridge, MA 02139, USA.  */
 
 #include "ansidecl.h"
 
-#undef	srand
+#undef srand
 
 int __srandom(unsigned int);
 
-int gnusrand(unsigned int seed)
-{
-  return (int) __srandom(seed);
+int gnusrand(unsigned int seed) {
+    return (int)__srandom(seed);
 }
-
