@@ -13,33 +13,33 @@
 #include "tree.h"
 #include "dealer.h"
 
-void  yyerror (char*);
-void  setshapebit (int, int, int, int, int, int);
-void  predeal (int, card);
-card  make_card(char,char);
-void  clearpointcount(void);
-void  clearpointcount_alt(int);
-void  pointcount(int,int);
-void* mycalloc(int,size_t);
-int   make_contract (char, char);
+void yyerror(char *);
+void setshapebit(int, int, int, int, int, int);
+void predeal(int, card);
+card make_card(char, char);
+void clearpointcount(void);
+void clearpointcount_alt(int);
+void pointcount(int, int);
+void *mycalloc(int, size_t);
+int make_contract(char, char);
 int d2n(char s[4]);
 int yylex();
 extern char *yytext;
 
-int predeal_compass;     /* global variable for predeal communication */
+int predeal_compass; /* global variable for predeal communication */
 
-int pointcount_index;    /* global variable for pointcount communication */
+int pointcount_index; /* global variable for pointcount communication */
 
-int shapeno ;
+int shapeno;
 
-struct tree *var_lookup(char *s, int mustbethere) ;
-struct action *newaction(int type, struct tree * p1, char * s1, int, struct tree * ) ;
-struct tree *newtree (int, struct tree*, struct tree*, int, int);
-struct expr  *newexpr(struct tree* tr1, char* ch1, struct expr* ex1);
-void bias_deal(int suit, int compass, int length) ;
-void predeal_holding(int compass, char *holding) ;
-void insertshape(char s[4], int any, int neg_shape) ;
-void new_var(char *s, struct tree *t) ;
+struct tree *var_lookup(char *s, int mustbethere);
+struct action *newaction(int type, struct tree *p1, char *s1, int, struct tree *);
+struct tree *newtree(int, struct tree *, struct tree *, int, int);
+struct expr *newexpr(struct tree *tr1, char *ch1, struct expr *ex1);
+void bias_deal(int suit, int compass, int length);
+void predeal_holding(int compass, char *holding);
+void insertshape(char s[4], int any, int neg_shape);
+void new_var(char *s, struct tree *t);
 %}
 
 
@@ -67,7 +67,7 @@ void new_var(char *s, struct tree *t) ;
 %token CONTROL LOSER DEALER VULNERABLE
 %token QUALITY CCCC
 %token TRICKS NOTRUMPS NORTHSOUTH EASTWEST
-%token EVALCONTRACT ALL NONE SCORE IMPS RND
+%token EVALCONTRACT ALL NONE SCORE IMPS RND DISTPTS
 %token PT0 PT1 PT2 PT3 PT4 PT5 PT6 PT7 PT8 PT9 PRINTES
 
 %token <y_int> NUMBER
@@ -213,6 +213,10 @@ expr
                 { $$ = newtree(TRT_HCPTOTAL, NIL, NIL, $3, 0); }
         | HCP '(' compass ',' SUIT ')'
                 { $$ = newtree(TRT_HCP, NIL, NIL, $3, $5); }
+        | DISTPTS '(' compass ')'
+                { $$ = newtree(TRT_DISTPTSTOTAL, NIL, NIL, $3, 0); }
+        | DISTPTS '(' compass ',' SUIT ')'
+                { $$ = newtree(TRT_DISTPTS, NIL, NIL, $3, $5); }
         | PT0 '(' compass ')'
                 { $$ = newtree(TRT_PT0TOTAL, NIL, NIL, $3, 0); }
         | PT0 '(' compass ',' SUIT ')'
@@ -275,13 +279,13 @@ expr
 		}
         | HASCARD '(' COMPASS ',' CARD ')'
                 { $$ = newtree(TRT_HASCARD, NIL, NIL, $3, $5); }
-    | TRICKS '(' compass ',' SUIT ')'
+        | TRICKS '(' compass ',' SUIT ')'
                 { $$ = newtree(TRT_TRICKS, NIL, NIL, $3, $5); }
-    | TRICKS '(' compass ',' NOTRUMPS ')'
+        | TRICKS '(' compass ',' NOTRUMPS ')'
                 { $$ = newtree(TRT_TRICKS, NIL, NIL, $3, 4); }
-    | SCORE '(' VULN ',' CONTRACT ',' expr ')'
+        | SCORE '(' VULN ',' CONTRACT ',' expr ')'
                 { $$ = newtree(TRT_SCORE, $7, NIL, $3, $5); }
-    | IMPS '(' expr ')'
+        | IMPS '(' expr ')'
                 { $$ = newtree(TRT_IMPS, $3, NIL, 0, 0); }
         | '(' expr ')'
                 { $$ = $2; }
@@ -367,7 +371,7 @@ action
                 { will_print++;
                   $$=newaction(ACT_EVALCONTRACT,0,0,0, NIL);}
         | PRINTCOMPACT '(' expr ')'
-                { will_print++; 
+                { will_print++;
                   $$=newaction(ACT_PRINTCOMPACT,$3,0,0, NIL);}
         | PRINTONELINE '(' expr ')'
                 { will_print++;
@@ -402,42 +406,40 @@ printlist
 %%
 
 struct var {
-        struct var *v_next;
-        char *v_ident;
-        struct tree *v_tree;
-} *vars=0;
+    struct var *v_next;
+    char *v_ident;
+    struct tree *v_tree;
+} *vars = 0;
 
-struct tree *var_lookup(char *s, int mustbethere)
-{
-        struct var *v;
+struct tree *var_lookup(char *s, int mustbethere) {
+    struct var *v;
 
-        for(v=vars; v!=0; v = v->v_next)
-                if (strcmp(s, v->v_ident)==0)
-                        return v->v_tree;
-        if (mustbethere)
-                yyerror("unknown variable");
-        return 0;
+    for (v = vars; v != 0; v = v->v_next)
+        if (strcmp(s, v->v_ident) == 0)
+            return v->v_tree;
+    if (mustbethere)
+        yyerror("unknown variable");
+    return 0;
 }
 
-void new_var(char *s, struct tree *t)
-{
-        struct var *v;
-        /* char *mycalloc(); */
+void new_var(char *s, struct tree *t) {
+    struct var *v;
+    /* char *mycalloc(); */
 
-        if (var_lookup(s, 0)!=0)
-                yyerror("redefined variable");
-        v = (struct var *) mycalloc(1, sizeof(*v));
-        v->v_next = vars;
-        v->v_ident = s;
-        v->v_tree = t;
-        vars = v;
+    if (var_lookup(s, 0) != 0)
+        yyerror("redefined variable");
+    v = (struct var *)mycalloc(1, sizeof(*v));
+    v->v_next = vars;
+    v->v_ident = s;
+    v->v_tree = t;
+    vars = v;
 }
 
-int lino=1;
+int lino = 1;
 
-void yyerror( char *s) {
-        fprintf(stderr, "line %d: %s at %s\n", lino, s, yytext);
-        exit(-1);
+void yyerror(char *s) {
+    fprintf(stderr, "line %d: %s at %s\n", lino, s, yytext);
+    exit(-1);
 }
 
 int perm[24][4] = {
@@ -468,57 +470,54 @@ int perm[24][4] = {
 };
 
 int shapeno;
-void insertshape(char s[4], int any, int neg_shape)
-{
-        int i,j,p;
-        int xcount=0, ccount=0;
-        char copy_s[4];
+void insertshape(char s[4], int any, int neg_shape) {
+    int i, j, p;
+    int xcount = 0, ccount = 0;
+    char copy_s[4];
 
-        for (i=0;i<4;i++) {
-		if (s[i]=='x')
-                        xcount++;
-                else
-                        ccount += s[i]-'0';
-        }
-        switch(xcount) {
+    for (i = 0; i < 4; i++) {
+        if (s[i] == 'x')
+            xcount++;
+        else
+            ccount += s[i] - '0';
+    }
+    switch (xcount) {
         case 0:
-                if (ccount!=13)
-                        yyerror("wrong number of cards in shape");
-                for (p=0; p<(any? 24 : 1); p++)
-                        setshapebit(s[perm[p][3]]-'0', s[perm[p][2]]-'0',
-                                s[perm[p][1]]-'0', s[perm[p][0]]-'0',
-                                1<<shapeno, neg_shape);
-                break;
+            if (ccount != 13)
+                yyerror("wrong number of cards in shape");
+            for (p = 0; p < (any ? 24 : 1); p++)
+                setshapebit(s[perm[p][3]] - '0', s[perm[p][2]] - '0', s[perm[p][1]] - '0',
+                            s[perm[p][0]] - '0', 1 << shapeno, neg_shape);
+            break;
         default:
-                if (ccount>13)
-                        yyerror("too many cards in ambiguous shape");
-                bcopy(s, copy_s, 4);
-                for(i=0; copy_s[i] != 'x'; i++)
-                        ;
-                if (xcount==1) {
-                        copy_s[i] = 13-ccount+'0';      /* could go above '9' */
-                        insertshape(copy_s, any, neg_shape);
-                } else {
-                        for (j=0; j<=13-ccount; j++) {
-                                copy_s[i] = j+'0';
-                                insertshape(copy_s, any, neg_shape);
-                        }
+            if (ccount > 13)
+                yyerror("too many cards in ambiguous shape");
+            bcopy(s, copy_s, 4);
+            for (i = 0; copy_s[i] != 'x'; i++)
+                ;
+            if (xcount == 1) {
+                copy_s[i] = 13 - ccount + '0'; /* could go above '9' */
+                insertshape(copy_s, any, neg_shape);
+            } else {
+                for (j = 0; j <= 13 - ccount; j++) {
+                    copy_s[i] = j + '0';
+                    insertshape(copy_s, any, neg_shape);
                 }
-                break;
-        }
+            }
+            break;
+    }
 }
 
 int d2n(char s[4]) {
-        static char copys[5];
+    static char copys[5];
 
-        strncpy(copys, s, 4);
-        return atoi(copys);
+    strncpy(copys, s, 4);
+    return atoi(copys);
 }
 
-struct tree *newtree(int type, struct tree *p1, struct tree *p2, int i1, int i2)
-{
-        /* char *mycalloc(); */
-        struct tree *p;
+struct tree *newtree(int type, struct tree *p1, struct tree *p2, int i1, int i2) {
+    /* char *mycalloc(); */
+    struct tree *p;
 
     p = (struct tree *)mycalloc(1, sizeof(*p));
     p->tr_type = type;
@@ -529,117 +528,100 @@ struct tree *newtree(int type, struct tree *p1, struct tree *p2, int i1, int i2)
     return p;
 }
 
-struct action *newaction(int type, struct tree *p1, char *s1, int i1, struct tree *p2)
-{
-        /* char *mycalloc(); */
-        struct action *a;
+struct action *newaction(int type, struct tree *p1, char *s1, int i1, struct tree *p2) {
+    /* char *mycalloc(); */
+    struct action *a;
 
-        a = (struct action *) mycalloc(1, sizeof(*a));
-        a->ac_type = type;
-        a->ac_expr1 = p1;
-        a->ac_str1 = s1;
-        a->ac_int1 = i1;
-        a->ac_expr2 = p2;
-        return a;
+    a = (struct action *)mycalloc(1, sizeof(*a));
+    a->ac_type = type;
+    a->ac_expr1 = p1;
+    a->ac_str1 = s1;
+    a->ac_int1 = i1;
+    a->ac_expr2 = p2;
+    return a;
 }
 
-struct expr *newexpr(struct tree* tr1, char* ch1, struct expr* ex1)
-{
-    struct expr* e;
-    e=(struct expr*) mycalloc(1, sizeof(*e));
+struct expr *newexpr(struct tree *tr1, char *ch1, struct expr *ex1) {
+    struct expr *e;
+    e = (struct expr *)mycalloc(1, sizeof(*e));
     e->ex_tr = tr1;
     e->ex_ch = ch1;
-    e->next  = 0;
-    if(ex1) {
-        struct expr* exau = ex1;
-            /* AM990705: the while's body had mysteriously disappeared, reinserted it */
-            while(exau->next)
-              exau = exau->next;
-            exau->next = e;
-            return ex1;
+    e->next = 0;
+    if (ex1) {
+        struct expr *exau = ex1;
+        /* AM990705: the while's body had mysteriously disappeared, reinserted it */
+        while (exau->next)
+            exau = exau->next;
+        exau->next = e;
+        return ex1;
     } else {
         return e;
     }
 }
 
-char *mystrcpy(char *s)
-{
-        char *cs;
-        /* char *mycalloc(); */
+char *mystrcpy(char *s) {
+    char *cs;
+    /* char *mycalloc(); */
 
-        cs = mycalloc(strlen(s)+1, sizeof(char));
-        strcpy(cs, s);
-        return cs;
+    cs = mycalloc(strlen(s) + 1, sizeof(char));
+    strcpy(cs, s);
+    return cs;
 }
 
-void predeal_holding(int compass, char *holding)
-{
-        char suit;
+void predeal_holding(int compass, char *holding) {
+    char suit;
 
-        suit = *holding++;
-        while (*holding) {
-                predeal(compass, make_card(*holding, suit));
-                holding++;
-        }
+    suit = *holding++;
+    while (*holding) {
+        predeal(compass, make_card(*holding, suit));
+        holding++;
+    }
 }
 
-
-#define TRUNCZ(x) ((x)<0?0:(x))
+#define TRUNCZ(x) ((x) < 0 ? 0 : (x))
 
 extern int biasdeal[4][4];
-extern char*player_name[4];
+extern char *player_name[4];
 static char *suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
 
-
-int bias_len(int compass){
-  return
-    TRUNCZ(biasdeal[compass][0])+
-    TRUNCZ(biasdeal[compass][1])+
-    TRUNCZ(biasdeal[compass][2])+
-    TRUNCZ(biasdeal[compass][3]);
+int bias_len(int compass) {
+    return TRUNCZ(biasdeal[compass][0]) + TRUNCZ(biasdeal[compass][1])
+        + TRUNCZ(biasdeal[compass][2]) + TRUNCZ(biasdeal[compass][3]);
 }
 
-int bias_totsuit(int suit){
-  return
-    TRUNCZ(biasdeal[0][suit])+
-    TRUNCZ(biasdeal[1][suit])+
-    TRUNCZ(biasdeal[2][suit])+
-    TRUNCZ(biasdeal[3][suit]);
+int bias_totsuit(int suit) {
+    return TRUNCZ(biasdeal[0][suit]) + TRUNCZ(biasdeal[1][suit])
+        + TRUNCZ(biasdeal[2][suit]) + TRUNCZ(biasdeal[3][suit]);
 }
 
-void bias_deal(int suit, int compass, int length){
-  if(biasdeal[compass][suit]!=-1){
-    char s[256];
-    sprintf(s,"%s's %s suit has length already set to %d",
-      player_name[compass],suit_name[suit],
-      biasdeal[compass][suit]);
-    yyerror(s);
-  }
-  biasdeal[compass][suit]=length;
-  if(bias_len(compass)>13){
-      char s[256];
-    sprintf(s,"Suit lengths too long for %s",
-      player_name[compass]);
-    yyerror(s);
-  }
-  if(bias_totsuit(suit)>13){
-    char s[256];
-    sprintf(s,"Too many %ss",suit_name[suit]);
-    yyerror(s);
-  }
+void bias_deal(int suit, int compass, int length) {
+    if (biasdeal[compass][suit] != -1) {
+        char s[256];
+        sprintf(s, "%s's %s suit has length already set to %d", player_name[compass],
+                suit_name[suit], biasdeal[compass][suit]);
+        yyerror(s);
+    }
+    biasdeal[compass][suit] = length;
+    if (bias_len(compass) > 13) {
+        char s[256];
+        sprintf(s, "Suit lengths too long for %s", player_name[compass]);
+        yyerror(s);
+    }
+    if (bias_totsuit(suit) > 13) {
+        char s[256];
+        sprintf(s, "Too many %ss", suit_name[suit]);
+        yyerror(s);
+    }
 }
-
 
 #define YY_USE_PROTOS
 
 #ifdef WIN32
-#pragma warning( disable : 4127 )
+#pragma warning(disable : 4127)
 #endif
 
 #include "scan.c"
 
 #ifdef WIN32
-#pragma warning( default : 4127 )
+#pragma warning(default : 4127)
 #endif
-
-

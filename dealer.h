@@ -29,8 +29,10 @@ int gnusrand(int);
 
 struct handstat {
     int hs_length[NSUITS];         /* distribution */
-    int hs_points[NSUITS];         /* 4321 HCP per suit */
-    int hs_totalpoints;            /* HCP in the hand */
+    int hs_hcp[NSUITS];            /* 4321 HCP per suit */
+    int hs_totalhcp;               /* HCP in the hand */
+    int hs_dist[NSUITS];           /* Distribution points per suit */
+    int hs_totaldist;              /* Distribution points in the hand */
     int hs_bits;                   /* Bitmap to check distribution */
     int hs_loser[NSUITS];          /* Losers in a suit */
     int hs_totalloser;             /* Losers in the hand */

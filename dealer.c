@@ -528,10 +528,13 @@ void analyze(deal d, struct handstat *hsbase) {
             hs->hs_totalcounts[t] = 0;
         }
 
-        /* clear the length for each suit */
+        /* clear the length and distribution for each suit */
         for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
             hs->hs_length[s] = 0;
+            hs->hs_dist[s] = 0;
         }
+        /* clear the total distribution */
+        hs->hs_totaldist = 0;
         /* clear the total losers */
         hs->hs_totalloser = 0;
 #endif /* _DEBUG_ */
@@ -617,12 +620,14 @@ void analyze(deal d, struct handstat *hsbase) {
 
             /* Now, using the values calculated already, load those pointcount
                values which are common enough to warrant a non array lookup */
-            hs->hs_points[s] = hs->hs_counts[idxHcp][s];
+            hs->hs_hcp[s] = hs->hs_counts[idxHcp][s];
             hs->hs_control[s] = hs->hs_counts[idxControls][s];
+            hs->hs_dist[s] = hs->hs_length[s] > 4 ? hs->hs_length[s] - 4 : 0;
+            hs->hs_totaldist += hs->hs_dist[s];
 
         } /* end for each suit */
 
-        hs->hs_totalpoints = hs->hs_totalcounts[idxHcp];
+        hs->hs_totalhcp = hs->hs_totalcounts[idxHcp];
         hs->hs_totalcontrol = hs->hs_totalcounts[idxControls];
 
         hs->hs_bits = distrbitmaps[hs->hs_length[SUIT_CLUB]][hs->hs_length[SUIT_DIAMOND]][hs->hs_length[SUIT_HEART]]
@@ -943,9 +948,9 @@ void exh_print_stats(struct handstat *hs) {
     int s;
     for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
         printf("  Suit %d: ", s);
-        printf("Len = %2d, Points = %2d\n", hs->hs_length[s], hs->hs_points[s]);
+        printf("Len = %2d, Points = %2d\n", hs->hs_length[s], hs->hs_hcp[s]);
     }
-    printf("  Totalpoints: %2d\n", hs->hs_totalpoints);
+    printf("  Totalpoints: %2d\n", hs->hs_totalhcp);
 }
 
 void exh_print_vector(struct handstat *hs) {
@@ -1037,15 +1042,15 @@ void exh_analyze_vec(int high_vec, int low_vec, struct handstat *hs) {
     struct handstat *hs1;
     hs0 = hs + exh_player[0];
     hs1 = hs + exh_player[1];
-    hs0->hs_totalpoints = hs1->hs_totalpoints = 0;
+    hs0->hs_totalhcp = hs1->hs_totalhcp = 0;
     for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
         hs0->hs_length[s] = exh_lsb_suit_length[s][low_vec] + exh_msb_suit_length[s][high_vec];
-        hs0->hs_points[s] = exh_lsb_suit_points[s][low_vec] + exh_msb_suit_points[s][high_vec];
+        hs0->hs_hcp[s] = exh_lsb_suit_points[s][low_vec] + exh_msb_suit_points[s][high_vec];
         hs1->hs_length[s] = exh_total_cards_in_suit[s] - hs0->hs_length[s];
-        hs1->hs_points[s] = exh_total_points_in_suit[s] - hs0->hs_points[s];
+        hs1->hs_hcp[s] = exh_total_points_in_suit[s] - hs0->hs_hcp[s];
     }
-    hs0->hs_totalpoints = exh_lsb_totalpoints[low_vec] + exh_msb_totalpoints[high_vec];
-    hs1->hs_totalpoints = exh_total_points - hs0->hs_totalpoints;
+    hs0->hs_totalhcp = exh_lsb_totalpoints[low_vec] + exh_msb_totalpoints[high_vec];
+    hs1->hs_totalhcp = exh_total_points - hs0->hs_totalhcp;
     hs0->hs_bits = distrbitmaps[hs0->hs_length[SUIT_CLUB]][hs0->hs_length[SUIT_DIAMOND]][hs0->hs_length[SUIT_HEART]]
                                [hs0->hs_length[SUIT_SPADE]];
     hs1->hs_bits = distrbitmaps[hs1->hs_length[SUIT_CLUB]][hs1->hs_length[SUIT_DIAMOND]][hs1->hs_length[SUIT_HEART]]
@@ -1101,7 +1106,10 @@ int evaltree(struct tree *t) {
             return hs[t->tr_int2].hs_length[t->tr_int1];
         case TRT_HCPTOTAL: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-            return hs[t->tr_int1].hs_totalpoints;
+            return hs[t->tr_int1].hs_totalhcp;
+        case TRT_DISTPTSTOTAL: /* compass */
+            assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
+            return hs[t->tr_int1].hs_totaldist;
         case TRT_PT0TOTAL: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxTens];
@@ -1135,7 +1143,11 @@ int evaltree(struct tree *t) {
         case TRT_HCP: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
-            return hs[t->tr_int1].hs_points[t->tr_int2];
+            return hs[t->tr_int1].hs_hcp[t->tr_int2];
+        case TRT_DISTPTS: /* compass, suit */
+            assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
+            assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
+            return hs[t->tr_int1].hs_dist[t->tr_int2];
         case TRT_PT0: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);

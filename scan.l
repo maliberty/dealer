@@ -45,6 +45,7 @@ printcompact    return(PRINTCOMPACT);
 printoneline    return(PRINTONELINE);
 printes         return(PRINTES);
 evalcontract    return(EVALCONTRACT);
+distpts         return(DISTPTS);
 nv              { yylval.y_int = NON_VUL; return VULN; }
 vul             { yylval.y_int = VUL; return VULN; }
 ns              { yylval.y_int = VULNERABLE_NS; return VULNERABLE_SIDE; }

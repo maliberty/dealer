@@ -98,6 +98,8 @@ struct expr {
 #define TRT_PT8 49
 #define TRT_PT9TOTAL 50
 #define TRT_PT9 51
+#define TRT_DISTPTS 52
+#define TRT_DISTPTSTOTAL 53
 
 /*
  * Actions to be taken
