@@ -28,3 +28,7 @@
 *.out
 *.app
 dealer
+
+# Generated parser files
+defs.c
+scan.c
