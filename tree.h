@@ -4,20 +4,20 @@
  * decision tree and other expression stuff
  */
 
-struct tree {
+struct Tree {
     int tr_type;
-    struct tree *tr_leaf1, *tr_leaf2;
+    struct Tree *tr_leaf1, *tr_leaf2;
     int tr_int1;
     int tr_int2;
 };
 
-struct expr {
-    struct tree *ex_tr;
+struct Expr {
+    struct Tree *ex_tr;
     char *ex_ch;
-    struct expr *next;
+    struct Expr *next;
 };
 
-#define NIL ((struct tree *)0)
+#define NIL ((struct Tree *)0)
 
 #define SUIT_CLUB 0
 #define SUIT_DIAMOND 1
@@ -26,7 +26,7 @@ struct expr {
 #define SUIT_NT 4
 #define NSUITS 4
 
-#define MAKECARD(suit, rank) ((card)(((suit) << 6) | (rank)))
+#define MAKECARD(suit, rank) ((Card)(((suit) << 6) | (rank)))
 
 #define MAKECONTRACT(suit, tricks) (tricks * 5 + suit)
 #define C_SUIT(c) ((c) >> 6)
@@ -104,7 +104,7 @@ struct expr {
 /*
  * Actions to be taken
  */
-struct acuft {
+struct Acuft {
     long acuf_lowbnd;
     long acuf_highbnd;
     long acuf_uflow;
@@ -113,7 +113,7 @@ struct acuft {
     long *acuf_freqs;
 };
 
-struct acuft2d {
+struct Acuft2d {
     long acuf_lowbnd_expr1;
     long acuf_highbnd_expr1;
     long acuf_lowbnd_expr2;
@@ -121,16 +121,16 @@ struct acuft2d {
     long *acuf_freqs;
 };
 
-struct action {
-    struct action *ac_next;
+struct Action {
+    struct Action *ac_next;
     int ac_type;
-    struct tree *ac_expr1;
-    struct tree *ac_expr2;
+    struct Tree *ac_expr1;
+    struct Tree *ac_expr2;
     int ac_int1;
     char *ac_str1;
     union {
-        struct acuft acu_f;
-        struct acuft2d acu_f2d;
+        struct Acuft acu_f;
+        struct Acuft2d acu_f2d;
     } ac_u;
 };
 

@@ -23,19 +23,22 @@ basically a no-op.
 #include "dealer.h"
 #include "c4.h"
 
-#define C4_TYPE int
-C4_TYPE Rescale(int nValue) {
+int has_card2(int s, int r, int seat)
+{
+    return HAS_CARD(curdeal, seat, (Card)MAKECARD(s, r));
+}
+
+int Rescale(int nValue) {
     return nValue;
 }
 
-C4_TYPE cccc(int seat) {
+int cccc(int seat) {
     return Rescale(eval_cccc(seat));
 }
 
-C4_TYPE quality(int seat, int suit) {
+int quality(int seat, int suit) {
     return Rescale(suit_quality(seat, suit));
 }
-#undef C4_TYPE
 
 int eval_cccc(int seat) {
     int eval = 0;
@@ -47,12 +50,12 @@ int eval_cccc(int seat) {
     for (suit = SUIT_CLUB; suit <= SUIT_SPADE; ++suit) {
         int Length = hs[seat].hs_length[suit];
 
-        int HasAce = HAS_CARD2(suit, RK_ACE);
-        int HasKing = HAS_CARD2(suit, RK_KING);
-        int HasQueen = HAS_CARD2(suit, RK_QUEEN);
-        int HasJack = HAS_CARD2(suit, RK_JACK);
-        int HasTen = HAS_CARD2(suit, RK_TEN);
-        int HasNine = HAS_CARD2(suit, RK_NINE);
+        int HasAce = has_card2(suit, RK_ACE, seat);
+        int HasKing = has_card2(suit, RK_KING, seat);
+        int HasQueen = has_card2(suit, RK_QUEEN, seat);
+        int HasJack = has_card2(suit, RK_JACK, seat);
+        int HasTen = has_card2(suit, RK_TEN, seat);
+        int HasNine = has_card2(suit, RK_NINE, seat);
 
         int HigherHonors = 0;
 
@@ -120,13 +123,13 @@ int suit_quality(int seat, int suit) {
 
     int Length = hs[seat].hs_length[suit];
 
-    int HasAce = HAS_CARD2(suit, RK_ACE);
-    int HasKing = HAS_CARD2(suit, RK_KING);
-    int HasQueen = HAS_CARD2(suit, RK_QUEEN);
-    int HasJack = HAS_CARD2(suit, RK_JACK);
-    int HasTen = HAS_CARD2(suit, RK_TEN);
-    int HasNine = HAS_CARD2(suit, RK_NINE);
-    int HasEight = HAS_CARD2(suit, RK_EIGHT);
+    int HasAce = has_card2(suit, RK_ACE, seat);
+    int HasKing = has_card2(suit, RK_KING, seat);
+    int HasQueen = has_card2(suit, RK_QUEEN, seat);
+    int HasJack = has_card2(suit, RK_JACK, seat);
+    int HasTen = has_card2(suit, RK_TEN, seat);
+    int HasNine = has_card2(suit, RK_NINE, seat);
+    int HasEight = has_card2(suit, RK_EIGHT, seat);
 
     int HigherHonors = 0;
 

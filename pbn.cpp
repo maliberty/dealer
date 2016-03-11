@@ -12,7 +12,7 @@
 extern long seed;
 extern char *input_file;
 
-int printpbn(int board, deal d) {
+int printpbn(int board, Deal d) {
     /* Symbols for the cards */
     char representation[] = "23456789TJQKA";
     /* Mnemonics for vulnerability and dealer */

@@ -67,8 +67,8 @@ int biasdeal[4][4] = {{-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1,
 int imparr[24] = {10,  40,  80,   120,  160,  210,  260,  310,  360,  410,  490,  590,
                   740, 890, 1090, 1190, 1490, 1740, 1990, 2240, 2490, 2990, 3490, 3990};
 
-deal fullpack;
-deal stacked_pack;
+Deal fullpack;
+Deal stacked_pack;
 
 int swapping = 0;
 int swapindex = 0;
@@ -89,30 +89,28 @@ int use_vulnerable[NSUITS];
 int nprod, maxproduce;
 int ngen;
 
-struct tree defaulttree = {TRT_NUMBER, NIL, NIL, 1, 0};
-struct tree *decisiontree = &defaulttree;
-struct action defaultaction = {(struct action *)0, ACT_PRINTALL};
-struct action *actionlist = &defaultaction;
+struct Tree defaulttree = {TRT_NUMBER, NIL, NIL, 1, 0};
+struct Tree *decisiontree = &defaulttree;
+struct Action defaultaction = {(struct Action *)0, ACT_PRINTALL};
+struct Action *actionlist = &defaultaction;
 unsigned char zero52[NRANDVALS];
-deal *deallist;
+Deal *deallist;
 
 /* Function definitions */
-void fprintcompact(FILE *, deal, int);
+void fprintcompact(FILE *, Deal, int);
 int trix(char);
 void error(const char *);
-void printew(deal d);
+void printew(Deal d);
 void yyparse();
-int true_dd(deal d, int l, int c); /* prototype */
+int true_dd(Deal d, int l, int c); /* prototype */
 
-extern struct handstat hs[4];
-
-extern deal curdeal;
+extern Deal curdeal;
 
 /* globals */
 int verbose;
-struct context c;
-struct handstat hs[4];
-deal curdeal;
+struct Context c;
+struct Handstat hs[4];
+Deal curdeal;
 int maxgenerate;
 int maxdealer;
 int maxvuln;
@@ -263,7 +261,7 @@ void showevalcontract(int nh) {
     }
 }
 
-int dd(deal d, int l, int c) {
+int dd(Deal d, int l, int c) {
     /* results-cached version of dd() */
     /* the dd cache, and the ngen it refers to */
     static int cached_ngen = -1;
@@ -296,7 +294,7 @@ int get_tricks(int pn, int dn) {
     return resu;
 }
 
-int true_dd(deal d, int l, int c) {
+int true_dd(Deal d, int l, int c) {
     if (loading && libdeal.valid) {
         int resu = get_tricks((l + 1) % 4, (c + 1) % 5);
         /* This will get the number of tricks EW can get.  If the user wanted NW,
@@ -409,7 +407,7 @@ void setshapebit(int cl, int di, int ht, int sp, int msk, int excepted) {
         distrbitmaps[cl][di][ht][sp] |= msk;
 }
 
-void newpack(deal d) {
+void newpack(Deal d) {
     int suit, rank, place;
 
     place = 0;
@@ -419,7 +417,7 @@ void newpack(deal d) {
 }
 
 #ifdef FRANCOIS
-int hascard(deal d, int player, card onecard, int vectordeal) {
+int hascard(Deal d, int player, Card onecard, int vectordeal) {
     int i;
     int who;
     switch (computing_mode) {
@@ -437,7 +435,7 @@ int hascard(deal d, int player, card onecard, int vectordeal) {
     }
     return 0;
 #else
-int hascard(deal d, int player, card onecard) {
+int hascard(Deal d, int player, Card onecard) {
     int i;
 
     for (i = player * 13; i < (player + 1) * 13; i++)
@@ -447,7 +445,7 @@ int hascard(deal d, int player, card onecard) {
 #endif /* FRANCOIS */
 }
 
-card make_card(char rankchar, char suitchar) {
+Card make_card(char rankchar, char suitchar) {
     int rank, suit = 0;
 
     for (rank = 0; rank < 13 && ucrep[rank] != rankchar; rank++)
@@ -499,13 +497,13 @@ int make_contract(char suitchar, char trickchar) {
     return MAKECONTRACT(suit, trick);
 }
 
-void analyze(deal d, struct handstat *hsbase) {
+void analyze(Deal d, struct Handstat *hsbase) {
     /* Analyze a hand.  Modified by HU to count controls and losers. */
     /* Further mod by AM to count several alternate pointcounts too  */
 
     int player, next, c, r, s, t;
-    card curcard;
-    struct handstat *hs;
+    Card curcard;
+    struct Handstat *hs;
 
     /* for each player */
     for (player = COMPASS_NORTH; player <= COMPASS_WEST; ++player) {
@@ -516,7 +514,7 @@ void analyze(deal d, struct handstat *hsbase) {
             /* In debug mode, blast the unused handstat, so that we can recognize it
                as garbage should if we accidently read from it */
             hs = hsbase + player;
-            memset(hs, 0xDF, sizeof(struct handstat));
+            memset(hs, 0xDF, sizeof(struct Handstat));
 #endif /* _DEBUG_ */
 
             continue;
@@ -525,11 +523,11 @@ void analyze(deal d, struct handstat *hsbase) {
         hs = hsbase + player;
 
         /* Initialize the handstat structure */
-        memset(hs, 0x00, sizeof(struct handstat));
+        memset(hs, 0x00, sizeof(struct Handstat));
 
 #ifdef _DEBUG
         /* To debug, blast it with garbage.... */
-        memset(hs, 0xDF, sizeof(struct handstat));
+        memset(hs, 0xDF, sizeof(struct Handstat));
 
         /* then overwrite those specific counters which need to be incremented */
         for (t = idxHcp; t < idxEnd; ++t) {
@@ -648,7 +646,7 @@ void analyze(deal d, struct handstat *hsbase) {
     } /* end for each player */
 }
 
-void fprintcompact(FILE *f, deal d, int ononeline) {
+void fprintcompact(FILE *f, Deal d, int ononeline) {
     char pt[] = "nesw";
     int s, p, r;
     for (p = COMPASS_NORTH; p <= COMPASS_WEST; p++) {
@@ -665,7 +663,7 @@ void fprintcompact(FILE *f, deal d, int ononeline) {
     }
 }
 
-void printdeal(deal d) {
+void printdeal(Deal d) {
     int suit, player, rank, cards;
 
     printf("%4d.\n", (nprod + 1));
@@ -710,7 +708,7 @@ void setup_deal() {
     }
 }
 
-void predeal(int player, card onecard) {
+void predeal(int player, Card onecard) {
     int i, j;
 
     for (i = 0; i < 52; i++) {
@@ -757,10 +755,10 @@ void initprogram() {
     }
 }
 
-void swap2(deal d, int p1, int p2) {
+void swap2(Deal d, int p1, int p2) {
     /* functions to assist "simulated" shuffling with player
        swapping or loading from Ginsberg's library.dat -- AM990423 */
-    card t;
+    Card t;
     int i;
     p1 *= 13;
     p2 *= 13;
@@ -787,9 +785,9 @@ FILE *find_library(const char *basename, const char *openopt) {
     return result;
 }
 
-int shuffle(deal d) {
+int shuffle(Deal d) {
     int i, j, k;
-    card t;
+    Card t;
 
     if (loading) {
         static FILE *lib = 0;
@@ -957,7 +955,7 @@ void exh_map_cards(void) {
     }
 }
 
-void exh_print_stats(struct handstat *hs) {
+void exh_print_stats(struct Handstat *hs) {
     int s;
     for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
         printf("  Suit %d: ", s);
@@ -966,10 +964,10 @@ void exh_print_stats(struct handstat *hs) {
     printf("  Totalpoints: %2d\n", hs->hs_totalhcp);
 }
 
-void exh_print_vector(struct handstat *hs) {
+void exh_print_vector(struct Handstat *hs) {
     int i, s, r;
     int onecard;
-    struct handstat *hsp;
+    struct Handstat *hsp;
 
     printf("Player %d: ", exh_player[0]);
     for (i = 0; i < 26; i++) {
@@ -1047,12 +1045,12 @@ void exh_precompute_analyse_tables(void) {
     exh_total_points = exh_lsb_totalpoints[0] + exh_msb_totalpoints[0];
 }
 
-void exh_analyze_vec(int high_vec, int low_vec, struct handstat *hs) {
+void exh_analyze_vec(int high_vec, int low_vec, struct Handstat *hs) {
     /* analyse the 2 remaining hands with the vectordeal data-structure.
        This is VERY fast !!!  */
     int s;
-    struct handstat *hs0;
-    struct handstat *hs1;
+    struct Handstat *hs0;
+    struct Handstat *hs1;
     hs0 = hs + exh_player[0];
     hs1 = hs + exh_player[1];
     hs0->hs_totalhcp = hs1->hs_totalhcp = 0;
@@ -1079,7 +1077,7 @@ int trix(char c) {
     return c - 'A' + 10;
 }
 
-int evaltree(struct tree *t) {
+int evaltree(struct Tree *t) {
     switch (t->tr_type) {
         default:
             assert(0);
@@ -1208,9 +1206,9 @@ int evaltree(struct tree *t) {
         case TRT_HASCARD: /* compass, card */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
 #ifdef FRANCOIS
-            return hascard(curdeal, t->tr_int1, (card)t->tr_int2, vectordeal);
+            return hascard(curdeal, t->tr_int1, (Card)t->tr_int2, vectordeal);
 #else
-            return hascard(curdeal, t->tr_int1, (card)t->tr_int2);
+            return hascard(curdeal, t->tr_int1, (Card)t->tr_int2);
 #endif                       /* FRANCOIS */
         case TRT_LOSERTOTAL: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
@@ -1258,7 +1256,7 @@ int interesting () {
 #define interesting() ((int)evaltree(decisiontree))
 
 void setup_action() {
-    struct action *acp;
+    struct Action *acp;
 
     /* Initialize all actions */
     for (acp = actionlist; acp != 0; acp = acp->ac_next) {
@@ -1276,7 +1274,7 @@ void setup_action() {
             case ACT_PRINTES:
                 break;
             case ACT_PRINT:
-                deallist = (deal *)mycalloc(maxproduce, sizeof(deal));
+                deallist = (Deal *)mycalloc(maxproduce, sizeof(Deal));
                 break;
             case ACT_AVERAGE:
                 break;
@@ -1296,7 +1294,7 @@ void setup_action() {
 }
 
 void action() {
-    struct action *acp;
+    struct Action *acp;
     int expr, expr2, val1, val2, high1 = 0, high2 = 0, low1 = 0, low2 = 0;
 
     for (acp = actionlist; acp != 0; acp = acp->ac_next) {
@@ -1320,7 +1318,7 @@ void action() {
                 break;
 
             case ACT_PRINTES: {
-                struct expr *pex = (struct expr *)acp->ac_expr1;
+                struct Expr *pex = (struct Expr *)acp->ac_expr1;
                 while (pex) {
                     if (pex->ex_tr) {
                         expr = evaltree(pex->ex_tr);
@@ -1343,7 +1341,7 @@ void action() {
                     printpbn(nprod, curdeal);
                 break;
             case ACT_PRINT:
-                memcpy(deallist[nprod], curdeal, sizeof(deal));
+                memcpy(deallist[nprod], curdeal, sizeof(Deal));
                 break;
             case ACT_AVERAGE:
                 acp->ac_int1 += evaltree(acp->ac_expr1);
@@ -1386,7 +1384,7 @@ void action() {
     }
 }
 
-void printhands(int boardno, deal *dealp, int player, int nhands) {
+void printhands(int boardno, Deal *dealp, int player, int nhands) {
     int i, suit, rank, cards;
 
     for (i = 0; i < nhands; i++)
@@ -1421,7 +1419,7 @@ float percent(int n, int d) {
 }
 
 void cleanup_action() {
-    struct action *acp;
+    struct Action *acp;
     int player, i;
 
     for (acp = actionlist; acp != 0; acp = acp->ac_next) {
@@ -1454,7 +1452,7 @@ void cleanup_action() {
                 printf("%g\n", (double)acp->ac_int1 / nprod);
                 break;
             case ACT_FREQUENCY: {
-                struct acuft *f = &acp->ac_u.acu_f;
+                struct Acuft *f = &acp->ac_u.acu_f;
                 printf("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
                 if (f->acuf_uflow)
                     printf("Low  \t%8ld\t%5.2f %%\n", f->acuf_uflow, percent(f->acuf_uflow, f->acuf_entries));
@@ -1506,7 +1504,7 @@ void cleanup_action() {
     }
 }
 
-void printew(deal d) {
+void printew(Deal d) {
     /* This function prints the east and west hands only (with west to the
        left of east), primarily intended for examples of auctions with 2
        players only.  HU.  */

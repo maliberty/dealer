@@ -1,20 +1,20 @@
 #ifndef DEALER_H
 #define DEALER_H
 
-typedef unsigned char card;
+typedef unsigned char Card;
 
-typedef card deal[52];
+typedef Card Deal[52];
 
 static const char *player_name[] = {"North", "East", "South", "West"};
 
 extern int verbose;
 
 /* Changes for cccc and quality */
-struct context {
-    deal *pd;            /* pointer to current deal */
-    struct handstat *ps; /* Pointer to stats of current deal */
+struct Context {
+    Deal *pd;            /* pointer to current deal */
+    struct Handstat *ps; /* Pointer to stats of current deal */
 };
-extern struct context c;
+extern struct Context c;
 
 #ifdef STD_RAND
 #define RANDOM rand
@@ -28,7 +28,7 @@ int gnusrand(unsigned int);
 
 #include "pointcount.h"
 
-struct handstat {
+struct Handstat {
     int hs_length[NSUITS];         /* distribution */
     int hs_hcp[NSUITS];            /* 4321 HCP per suit */
     int hs_totalhcp;               /* HCP in the hand */
@@ -43,9 +43,9 @@ struct handstat {
     int hs_totalcounts[idxEnd];    /* totals of the above */
 };
 
-extern struct handstat hs[4];
+extern struct Handstat hs[4];
 
-extern deal curdeal;
+extern Deal curdeal;
 
 extern int maxgenerate;
 extern int maxdealer;
@@ -56,14 +56,14 @@ extern int will_print;
 #define printoneline(d) (fprintcompact(stdout, d, 1))
 
 #ifdef FRANCOIS
-int hascard(deal, int, card, int);
+int hascard(Deal, int, Card, int);
 #define HAS_CARD(d, p, c) hascard(d, p, c, 0)
 #else
-int hascard(deal, int, card);
+int hascard(Deal, int, Card);
 #define HAS_CARD(d, p, c) hascard(d, p, c)
 #endif
 
-card make_card(char rankchar, char suitchar);
+Card make_card(char rankchar, char suitchar);
 int make_contract(char suitchar, char trickchar);
 
 #endif /* DEALER_H */

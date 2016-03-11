@@ -15,8 +15,8 @@
 
 void yyerror(const char *);
 void setshapebit(int, int, int, int, int, int);
-void predeal(int, card);
-card make_card(char, char);
+void predeal(int, Card);
+Card make_card(char, char);
 void clearpointcount(void);
 void clearpointcount_alt(int);
 void pointcount(int, int);
@@ -32,14 +32,14 @@ int pointcount_index; /* global variable for pointcount communication */
 
 int shapeno;
 
-struct tree *var_lookup(char *s, int mustbethere);
-struct action *newaction(int type, struct tree *p1, char *s1, int, struct tree *);
-struct tree *newtree(int, struct tree *, struct tree *, int, int);
-struct expr *newexpr(struct tree *tr1, char *ch1, struct expr *ex1);
+struct Tree *var_lookup(char *s, int mustbethere);
+struct Action *newaction(int type, struct Tree *p1, char *s1, int, struct Tree *);
+struct Tree *newtree(int, struct Tree *, struct Tree *, int, int);
+struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1);
 void bias_deal(int suit, int compass, int length);
 void predeal_holding(int compass, char *holding);
 void insertshape(char s[4], int any, int neg_shape);
-void new_var(char *s, struct tree *t);
+void new_var(char *s, struct Tree *t);
 
 extern int yylineno; // from scan.c
 %}
@@ -48,9 +48,9 @@ extern int yylineno; // from scan.c
 %union {
         int     y_int;
         char    *y_str;
-        struct tree *y_tree;
-        struct action *y_action;
-        struct expr   *y_expr;
+        struct Tree *y_tree;
+        struct Action *y_action;
+        struct Expr   *y_expr;
         char    y_distr[4];
 }
 
@@ -118,11 +118,11 @@ def
         | ALTCOUNT number
                 { clearpointcount_alt($2); pointcount_index=12;} pointcountargs
         | CONDITION expr
-                { extern struct tree *decisiontree; decisiontree = $2; }
+                { extern struct Tree *decisiontree; decisiontree = $2; }
         | IDENT '=' expr
                 { new_var($1, $3); }
         | ACTION actionlist
-                { extern struct action *actionlist; actionlist = $2; }
+                { extern struct Action *actionlist; actionlist = $2; }
         ;
 
 predealargs
@@ -366,7 +366,7 @@ action
                   $$=newaction(ACT_PRINTPBN,NIL,0,0, NIL);}
         | PRINTES '(' exprlist ')'
                 { will_print++;
-                  $$=newaction(ACT_PRINTES,(struct tree*)$3,0,0, NIL); }
+                  $$=newaction(ACT_PRINTES,(struct Tree*)$3,0,0, NIL); }
         | EVALCONTRACT  /* should allow user to specify vuln, suit, decl */
                 { will_print++;
                   $$=newaction(ACT_EVALCONTRACT,0,0,0, NIL);}
@@ -408,10 +408,10 @@ printlist
 struct var {
     struct var *v_next;
     char *v_ident;
-    struct tree *v_tree;
+    struct Tree *v_tree;
 } *vars = 0;
 
-struct tree *var_lookup(char *s, int mustbethere) {
+struct Tree *var_lookup(char *s, int mustbethere) {
     struct var *v;
 
     for (v = vars; v != 0; v = v->v_next)
@@ -422,7 +422,7 @@ struct tree *var_lookup(char *s, int mustbethere) {
     return 0;
 }
 
-void new_var(char *s, struct tree *t) {
+void new_var(char *s, struct Tree *t) {
     struct var *v;
     /* char *mycalloc(); */
 
@@ -512,11 +512,11 @@ int d2n(char s[4]) {
     return atoi(copys);
 }
 
-struct tree *newtree(int type, struct tree *p1, struct tree *p2, int i1, int i2) {
+struct Tree *newtree(int type, struct Tree *p1, struct Tree *p2, int i1, int i2) {
     /* char *mycalloc(); */
-    struct tree *p;
+    struct Tree *p;
 
-    p = (struct tree *)mycalloc(1, sizeof(*p));
+    p = (struct Tree *)mycalloc(1, sizeof(*p));
     p->tr_type = type;
     p->tr_leaf1 = p1;
     p->tr_leaf2 = p2;
@@ -525,11 +525,11 @@ struct tree *newtree(int type, struct tree *p1, struct tree *p2, int i1, int i2)
     return p;
 }
 
-struct action *newaction(int type, struct tree *p1, char *s1, int i1, struct tree *p2) {
+struct Action *newaction(int type, struct Tree *p1, char *s1, int i1, struct Tree *p2) {
     /* char *mycalloc(); */
-    struct action *a;
+    struct Action *a;
 
-    a = (struct action *)mycalloc(1, sizeof(*a));
+    a = (struct Action *)mycalloc(1, sizeof(*a));
     a->ac_type = type;
     a->ac_expr1 = p1;
     a->ac_str1 = s1;
@@ -538,14 +538,14 @@ struct action *newaction(int type, struct tree *p1, char *s1, int i1, struct tre
     return a;
 }
 
-struct expr *newexpr(struct tree *tr1, char *ch1, struct expr *ex1) {
-    struct expr *e;
-    e = (struct expr *)mycalloc(1, sizeof(*e));
+struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1) {
+    struct Expr *e;
+    e = (struct Expr *)mycalloc(1, sizeof(*e));
     e->ex_tr = tr1;
     e->ex_ch = ch1;
     e->next = 0;
     if (ex1) {
-        struct expr *exau = ex1;
+        struct Expr *exau = ex1;
         /* AM990705: the while's body had mysteriously disappeared, reinserted it */
         while (exau->next)
             exau = exau->next;
