@@ -269,12 +269,12 @@ expr
                 { $$ = newtree(TRT_QUALITY, NIL, NIL, $3, $5); }
         | SHAPE '(' compass ',' shapelist ')'
                 {
-		  $$ = newtree(TRT_SHAPE, NIL, NIL, $3, 1<<(shapeno++));
-		  if (shapeno >= 32) {
-		    yyerror("Too many shapes -- only 32 allowed!\n");
-		    YYERROR;
-		  }
-		}
+          $$ = newtree(TRT_SHAPE, NIL, NIL, $3, 1<<(shapeno++));
+          if (shapeno >= 32) {
+            yyerror("Too many shapes -- only 32 allowed!\n");
+            YYERROR;
+          }
+        }
         | HASCARD '(' COMPASS ',' CARD ')'
                 { $$ = newtree(TRT_HASCARD, NIL, NIL, $3, $5); }
         | TRICKS '(' compass ',' SUIT ')'
