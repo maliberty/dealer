@@ -107,8 +107,8 @@ rnd             return(RND);
 [0-9x]{4}       { strncpy(yylval.y_distr, yytext, 4); return strchr(yytext, 'x') ? DISTR : DISTR_OR_NUMBER; }
 [0-9]+          { yylval.y_int = atoi(yytext); return NUMBER; }
 
-/* AM990705: removed a production to fix unary-minus syntax glitch         */
-/* [-][0-9]+               { yylval.y_int = atoi(yytext); return NUMBER; } */
+ /* AM990705: removed a production to fix unary-minus syntax glitch         */
+ /* [-][0-9]+               { yylval.y_int = atoi(yytext); return NUMBER; } */
 
 [a-zA-Z][a-zA-Z0-9_]*   { yylval.y_str = mystrcpy(yytext); return IDENT; }
 [ \t]           ;
