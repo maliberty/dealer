@@ -32,6 +32,7 @@ dealer
 # Generated parser files
 defs.c
 scan.c
+defs.h
 
 # Test files
 Examples/Output.*
