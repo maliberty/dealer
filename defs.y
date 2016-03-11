@@ -40,6 +40,8 @@ void bias_deal(int suit, int compass, int length);
 void predeal_holding(int compass, char *holding);
 void insertshape(char s[4], int any, int neg_shape);
 void new_var(char *s, struct tree *t);
+
+extern int yylineno; // from scan.c
 %}
 
 
@@ -433,10 +435,8 @@ void new_var(char *s, struct tree *t) {
     vars = v;
 }
 
-int lino = 1;
-
 void yyerror(char *s) {
-    fprintf(stderr, "line %d: %s at %s\n", lino, s, yytext);
+    fprintf(stderr, "line %d: %s at %s\n", yylineno, s, yytext);
     exit(-1);
 }
 
@@ -617,8 +617,6 @@ void bias_deal(int suit, int compass, int length) {
 #ifdef WIN32
 #pragma warning(disable : 4127)
 #endif
-
-#include "scan.c"
 
 #ifdef WIN32
 #pragma warning(default : 4127)

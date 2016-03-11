@@ -62,4 +62,7 @@ int hascard(deal, int, card);
 #define HAS_CARD(d, p, c) hascard(d, p, c)
 #endif
 
+card make_card(char rankchar, char suitchar);
+int make_contract(char suitchar, char trickchar);
+
 #endif /* DEALER_H */

@@ -1,6 +1,15 @@
-/* $Header: /home/henk/CVS/dealer/scan.l,v 1.8 1999/07/05 19:44:30 henk Exp $ */
+%{
+#include "defs.h"
+#include "tree.h"
+#include "dealer.h"
+
+void yyerror(char *);
+char *mystrcpy(char *s);
+%}
+
 %x COMMENT
 %option nounput
+%option yylineno
 %%
 "&&"            return(AND2);
 and             return(AND2);
@@ -21,11 +30,11 @@ not             return(NOT);
 "%"             return(ARMOD);
 "?"             return(QUERY);
 ":"             return(COLON);
-"//".*\n        {lino++;}
+"//".*\n        ;
 "/*"            BEGIN(COMMENT);
 <COMMENT>[^*\n<<EOF>>]*
 <COMMENT>"*"+[^*/\n<<EOF>]*
-<COMMENT>\n     lino++;
+<COMMENT>\n      ;
 <COMMENT><<EOF>> yyerror("EOF found in comment");
 <COMMENT>"*"+"/" BEGIN(INITIAL);
 generate        return(GENERATE);
@@ -112,7 +121,7 @@ rnd             return(RND);
 
 [a-zA-Z][a-zA-Z0-9_]*   { yylval.y_str = mystrcpy(yytext); return IDENT; }
 [ \t]           ;
-\r*\n           { lino++; }
-^\#.*\n         { lino++; }
+\r*\n           ;
+^\#.*\n         ;
 .               return(yytext[0]);
 

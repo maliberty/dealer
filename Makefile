@@ -14,7 +14,7 @@ LSRC = scan.l
 YSRC = defs.y
 HDR  = c4.h dealer.h getopt.h pbn.h pointcount.h tree.h
 
-OBJ  = dealer.o defs.o pbn.o c4.o getopt.o pointcount.o
+OBJ  = dealer.o defs.o scan.o pbn.o c4.o getopt.o pointcount.o
 LOBJ = scan.c
 YOBJ = defs.c
 
@@ -24,7 +24,7 @@ dealer: ${OBJ} ${LOBJ} ${YOBJ}
 	$(CC) -o $@ ${OBJ} -L./Random -lgnurand
 
 clean:
-	rm -f ${OBJ} ${LOBJ} ${YOBJ} 
+	rm -f ${OBJ} ${LOBJ} ${YOBJ} ${OBJ:.o=.d}
 	${MAKE} -C Examples clean
 	${MAKE} -C Random   clean
 
@@ -35,7 +35,7 @@ tarclean: clean ${YOBJ}
 tarfile: tarclean
 	cd .. ; \
 	tar cvf ${TARFILE} ${PROGRAM} --exclude CVS --exclude ${TARFILE}; \
-	mv ${TARFILE} ${PROGRAM} 
+	mv ${TARFILE} ${PROGRAM}
 	gzip -f ${TARFILE}
 
 test: dealer
@@ -54,8 +54,7 @@ format:
 # Yacc
 #
 .y.c:
-	${YACC} $<
-	mv -f y.tab.c $@
+	${YACC} -d -o $@ $<
 
 #
 # C-code
