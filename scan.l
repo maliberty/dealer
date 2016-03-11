@@ -64,39 +64,39 @@ clubs?          { yylval.y_int = SUIT_CLUB; return SUIT; }
 diamonds?       { yylval.y_int = SUIT_DIAMOND; return SUIT; }
 hearts?         { yylval.y_int = SUIT_HEART; return SUIT; }
 spades?         { yylval.y_int = SUIT_SPADE; return SUIT; }
-notrumps?   return NOTRUMPS;
-hcps?       return(HCP);
-pt0                 return(PT0);
-tens?       return(PT0);
-pt1                 return(PT1);
+notrumps?       return NOTRUMPS;
+hcps?           return(HCP);
+pt0             return(PT0);
+tens?           return(PT0);
+pt1             return(PT1);
 jacks?          return(PT1);
-pt2                 return(PT2);
+pt2             return(PT2);
 queens?         return(PT2);
-pt3                 return(PT3);
+pt3             return(PT3);
 kings?          return(PT3);
-pt4                 return(PT4);
+pt4             return(PT4);
 aces?           return(PT4);
-pt5                 return(PT5);
+pt5             return(PT5);
 top2            return(PT5);
-pt6                 return(PT6);
+pt6             return(PT6);
 top3            return(PT6);
-pt7                 return(PT7);
+pt7             return(PT7);
 top4            return(PT7);
-pt8                 return(PT8);
+pt8             return(PT8);
 top5            return(PT8);
-pt9                 return(PT9);
-c13                 return(PT9);
+pt9             return(PT9);
+c13             return(PT9);
 losers?         return(LOSER);
-controls?   return(CONTROL);
+controls?       return(CONTROL);
 quality         return(QUALITY);
 cccc            return(CCCC);
-tricks?     return(TRICKS);
-score       return(SCORE);
-imps?       return(IMPS);
+tricks?         return(TRICKS);
+score           return(SCORE);
+imps?           return(IMPS);
 hascard         return(HASCARD);
 shape           return(SHAPE);
-any                 return(ANY);
-rnd         return(RND);
+any             return(ANY);
+rnd             return(RND);
 [CDHS]A?K?Q?J?T?9?8?7?6?5?4?3?2?        { yylval.y_str = mystrcpy(yytext); return HOLDING; }
 [2-9TJQKA][CDHS]        { yylval.y_int = make_card(yytext[0], yytext[1]);
                           return(CARD); }
@@ -104,12 +104,11 @@ rnd         return(RND);
                           return(CONTRACT);}
 \"[^"]*\"       { yytext[yyleng-1] = 0; yylval.y_str = mystrcpy(yytext+1); return STRING; }
 \\n             { yylval.y_str = mystrcpy("\n"); return STRING; }
-[0-9x]{4}       { strncpy(yylval.y_distr, yytext, 4); return strchr(yytext, 'x') ? DISTR
- : DISTR_OR_NUMBER; }
+[0-9x]{4}       { strncpy(yylval.y_distr, yytext, 4); return strchr(yytext, 'x') ? DISTR : DISTR_OR_NUMBER; }
 [0-9]+          { yylval.y_int = atoi(yytext); return NUMBER; }
 
- /* AM990705: removed a production to fix unary-minus syntax glitch         */
- /* [-][0-9]+               { yylval.y_int = atoi(yytext); return NUMBER; } */
+/* AM990705: removed a production to fix unary-minus syntax glitch         */
+/* [-][0-9]+               { yylval.y_int = atoi(yytext); return NUMBER; } */
 
 [a-zA-Z][a-zA-Z0-9_]*   { yylval.y_str = mystrcpy(yytext); return IDENT; }
 [ \t]           ;
