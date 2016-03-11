@@ -1,15 +1,17 @@
 %{
-#include "defs.h"
+#include "defs.hpp"
 #include "tree.h"
 #include "dealer.h"
 
-void yyerror(char *);
-char *mystrcpy(char *s);
+void yyerror(const char *);
+char *mystrcpy(const char *s);
 %}
 
 %x COMMENT
 %option nounput
 %option yylineno
+%option noyywrap
+
 %%
 "&&"            return(AND2);
 and             return(AND2);

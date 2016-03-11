@@ -1,7 +1,7 @@
-SRC      = $(wildcard *.c) 
-OBJ      = $(subst .c,.o,$(wildcard *.c)) 
-GCC      = gcc
-GCCFLAGS = -c -Wall -O2 -I.
+SRC      = $(wildcard *.cpp)
+OBJ      = $(subst .cpp,.o,$(SRC))
+CXX      = g++
+CXXFLAGS = -c -Wall -O2 -I.
 HDR      = ansidecl.h
 LIB      = libgnurand.a
 AR       = ar
@@ -12,7 +12,7 @@ help:
 	@echo
 	@echo "lib:   Make ${LIB}"
 	@echo "clean: Remove ${OBJ}"
-	@echo  
+	@echo
 
 lib: ${LIB}
 
@@ -20,8 +20,8 @@ lib: ${LIB}
 clean:
 	-rm ${OBJ} ${LIB}
 
-.c.o: ${HDR}
-	${GCC} ${GCCFLAGS} -o $@ $<
+%.o : %.cpp ${HDR}
+	${CXX} ${CXXFLAGS} -o $@ $<
 
 ${LIB}: ${OBJ} ${HDR}
 	${AR} ${ARFLAGS} $@ ${OBJ}

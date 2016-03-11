@@ -30,9 +30,9 @@
 dealer
 
 # Generated parser files
-defs.c
-scan.c
-defs.h
+defs.cpp
+scan.cpp
+defs.hpp
 
 # Test files
 Examples/Output.*

@@ -5,15 +5,16 @@ typedef unsigned char card;
 
 typedef card deal[52];
 
-static char *player_name[] = {"North", "East", "South", "West"};
+static const char *player_name[] = {"North", "East", "South", "West"};
 
-int verbose;
+extern int verbose;
 
 /* Changes for cccc and quality */
 struct context {
     deal *pd;            /* pointer to current deal */
     struct handstat *ps; /* Pointer to stats of current deal */
-} c;
+};
+extern struct context c;
 
 #ifdef STD_RAND
 #define RANDOM rand
@@ -22,7 +23,7 @@ struct context {
 #define RANDOM gnurand
 int gnurand();
 #define SRANDOM(seed) gnusrand(seed)
-int gnusrand(int);
+int gnusrand(unsigned int);
 #endif /* STD_RAND */
 
 #include "pointcount.h"
@@ -42,14 +43,14 @@ struct handstat {
     int hs_totalcounts[idxEnd];    /* totals of the above */
 };
 
-struct handstat hs[4];
+extern struct handstat hs[4];
 
-deal curdeal;
+extern deal curdeal;
 
-int maxgenerate;
-int maxdealer;
-int maxvuln;
-int will_print;
+extern int maxgenerate;
+extern int maxdealer;
+extern int maxvuln;
+extern int will_print;
 
 #define printcompact(d) (fprintcompact(stdout, d, 0))
 #define printoneline(d) (fprintcompact(stdout, d, 1))

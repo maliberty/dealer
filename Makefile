@@ -1,22 +1,22 @@
 # $Header: /home/henk/CVS/dealer/Makefile,v 1.15 1999/08/05 19:57:44 henk Exp $
 
-CC      = gcc
+CXX     = g++
 CFLAGS = -Wall -pedantic -O2 -I. -DNDEBUG -DYY_NO_INPUT -Wno-deprecated-declarations -c
 FLEX    = flex
-YACC    = yacc
+YACC    = bison
 
 PROGRAM  = dealer
 TARFILE  = ${PROGRAM}.tar
 GZIPFILE = ${PROGRAM}.tar.gz
 
-SRC  = dealer.c pbn.c c4.c getopt.c pointcount.c
+SRC  = dealer.cpp pbn.cpp c4.cpp getopt.cpp pointcount.cpp
 LSRC = scan.l
 YSRC = defs.y
 HDR  = c4.h dealer.h getopt.h pbn.h pointcount.h tree.h
 
 OBJ  = dealer.o defs.o scan.o pbn.o c4.o getopt.o pointcount.o
-LOBJ = scan.c
-YOBJ = defs.c
+LOBJ = scan.cpp
+YOBJ = defs.cpp
 
 
 dealer: ${OBJ} ${LOBJ} ${YOBJ}
@@ -47,19 +47,19 @@ format:
 #
 # Lex
 #
-.l.c:
-	${FLEX} -t $< >$@
+%.cpp: %.l
+	${FLEX} -o $@ $<
 
 #
 # Yacc
 #
-.y.c:
+%.cpp: %.y
 	${YACC} -d -o $@ $<
 
 #
-# C-code
+# C++-code
 #
-.c.o:
-	${CC} ${CFLAGS} -o $@ -MMD -MP $<
+%.o: %.cpp
+	${CXX} ${CFLAGS} -o $@ -MMD -MP $<
 
 -include $(wildcard *.d)

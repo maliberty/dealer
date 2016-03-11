@@ -45,7 +45,7 @@ void gettimeofday(struct timeval *tv, void *pv) {
 #include "c4.h"
 #include "pbn.h"
 
-void yyerror(char *);
+void yyerror(const char *);
 
 #define TWO_TO_THE_13 (1 << 13)
 #define DEFAULT_MODE STAT_MODE
@@ -99,10 +99,25 @@ deal *deallist;
 /* Function definitions */
 void fprintcompact(FILE *, deal, int);
 int trix(char);
-void error(char *);
+void error(const char *);
 void printew(deal d);
 void yyparse();
 int true_dd(deal d, int l, int c); /* prototype */
+
+extern struct handstat hs[4];
+
+extern deal curdeal;
+
+/* globals */
+int verbose;
+struct context c;
+struct handstat hs[4];
+deal curdeal;
+int maxgenerate;
+int maxdealer;
+int maxvuln;
+int will_print;
+
 
 #ifdef FRANCOIS
 /* Special variables for exhaustive mode
@@ -323,7 +338,7 @@ void evalcontract() {
     }
 }
 
-void error(char *s) {
+void error(const char *s) {
     fprintf(stderr, "%s\n", s);
     exit(10);
 }
@@ -359,10 +374,8 @@ void pointcount(int index, int value) {
         tblPointcount[countindex][index] = value;
 }
 
-char *mycalloc(unsigned nel, unsigned siz) {
-    char *p;
-
-    p = calloc(nel, siz);
+void *mycalloc(unsigned nel, size_t siz) {
+    void* p = calloc(nel, siz);
     if (p)
         return p;
     fprintf(stderr, "Out of memory\n");
@@ -1493,11 +1506,6 @@ void cleanup_action() {
     }
 }
 
-int yywrap() {
-    /* Necessary if you do not have a -ll library */
-    return 1;
-}
-
 void printew(deal d) {
     /* This function prints the east and west hands only (with west to the
        left of east), primarily intended for examples of auctions with 2
@@ -1545,7 +1553,7 @@ int main(int argc, char **argv) {
 
     gettimeofday(&tvstart, (void *)0);
 
-    while ((c = getopt(argc, argv, "023ehuvmqp:g:s:l:V")) != -1) {
+    while ((c = mygetopt(argc, argv, "023ehuvmqp:g:s:l:V")) != -1) {
         switch (c) {
             case '0':
             case '2':

@@ -13,14 +13,14 @@
 #include "tree.h"
 #include "dealer.h"
 
-void yyerror(char *);
+void yyerror(const char *);
 void setshapebit(int, int, int, int, int, int);
 void predeal(int, card);
 card make_card(char, char);
 void clearpointcount(void);
 void clearpointcount_alt(int);
 void pointcount(int, int);
-void *mycalloc(int, size_t);
+void *mycalloc(unsigned, size_t);
 int make_contract(char, char);
 int d2n(char s[4]);
 int yylex();
@@ -435,7 +435,7 @@ void new_var(char *s, struct tree *t) {
     vars = v;
 }
 
-void yyerror(char *s) {
+void yyerror(const char *s) {
     fprintf(stderr, "line %d: %s at %s\n", yylineno, s, yytext);
     exit(-1);
 }
@@ -467,7 +467,6 @@ int perm[24][4] = {
         {       3,      2,      1,      0       },
 };
 
-int shapeno;
 void insertshape(char s[4], int any, int neg_shape) {
     int i, j, p;
     int xcount = 0, ccount = 0;
@@ -557,11 +556,8 @@ struct expr *newexpr(struct tree *tr1, char *ch1, struct expr *ex1) {
     }
 }
 
-char *mystrcpy(char *s) {
-    char *cs;
-    /* char *mycalloc(); */
-
-    cs = mycalloc(strlen(s) + 1, sizeof(char));
+char *mystrcpy(const char *s) {
+    char *cs = (char *) mycalloc(strlen(s) + 1, sizeof(char));
     strcpy(cs, s);
     return cs;
 }
@@ -579,8 +575,8 @@ void predeal_holding(int compass, char *holding) {
 #define TRUNCZ(x) ((x) < 0 ? 0 : (x))
 
 extern int biasdeal[4][4];
-extern char *player_name[4];
-static char *suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
+extern const char *player_name[4];
+static const char *suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
 
 int bias_len(int compass) {
     return TRUNCZ(biasdeal[compass][0]) + TRUNCZ(biasdeal[compass][1])
