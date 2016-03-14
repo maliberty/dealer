@@ -55,7 +55,9 @@ void yyerror(const char *);
 /* Global variables */
 
 enum { STAT_MODE, EXHAUST_MODE };
-int computing_mode = DEFAULT_MODE;
+static int computing_mode = DEFAULT_MODE;
+
+const char *player_name[] = {"North", "East", "South", "West"};
 
 int uppercase = 0;
 char lcrep[] = "23456789tjqka";
@@ -104,11 +106,8 @@ void printew(Deal d);
 void yyparse();
 int true_dd(Deal d, int l, int c); /* prototype */
 
-extern Deal curdeal;
-
 /* globals */
 int verbose;
-struct Context c;
 struct Handstat hs[4];
 Deal curdeal;
 int maxgenerate;
@@ -1538,8 +1537,6 @@ void printew(Deal d) {
 
 int main(int argc, char **argv) {
     int seed_provided = 0;
-    extern int optind;
-    extern char *optarg;
     char c;
     int errflg = 0;
     int progressmeter = 0;

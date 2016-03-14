@@ -5,16 +5,9 @@ typedef unsigned char Card;
 
 typedef Card Deal[52];
 
-static const char *player_name[] = {"North", "East", "South", "West"};
+extern const char *player_name[4];
 
 extern int verbose;
-
-/* Changes for cccc and quality */
-struct Context {
-    Deal *pd;            /* pointer to current deal */
-    struct Handstat *ps; /* Pointer to stats of current deal */
-};
-extern struct Context c;
 
 #ifdef STD_RAND
 #define RANDOM rand
@@ -50,7 +43,16 @@ extern Deal curdeal;
 extern int maxgenerate;
 extern int maxdealer;
 extern int maxvuln;
+extern int maxproduce;
 extern int will_print;
+extern struct Tree *decisiontree;
+extern struct Action *actionlist;
+extern int use_compass[NSUITS];
+extern int use_vulnerable[NSUITS];
+extern int biasdeal[4][4];
+extern long seed;
+extern char *input_file;
+
 
 #define printcompact(d) (fprintcompact(stdout, d, 0))
 #define printoneline(d) (fprintcompact(stdout, d, 1))

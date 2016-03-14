@@ -9,9 +9,6 @@
 #include "dealer.h"
 #include "pbn.h"
 
-extern long seed;
-extern char *input_file;
-
 int printpbn(int board, Deal d) {
     /* Symbols for the cards */
     char representation[] = "23456789TJQKA";

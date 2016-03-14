@@ -102,27 +102,23 @@ defs
 
 def
         : GENERATE number
-                { extern int maxgenerate; if(!maxgenerate) maxgenerate = $2; }
+                { if(!maxgenerate) maxgenerate = $2; }
         | PRODUCE number
-                { extern int maxproduce; if(!maxproduce) maxproduce = $2; }
+                { if(!maxproduce) maxproduce = $2; }
         | DEALER  compass
-                { extern int maxdealer;
-                  maxdealer = $2;
-                }
+                { maxdealer = $2; }
         | VULNERABLE vulnerable
-                { extern int maxvuln;
-                  maxvuln = $2;
-                }
+                { maxvuln = $2; }
         | PREDEAL predealargs
         | POINTCOUNT { clearpointcount(); pointcount_index=12;} pointcountargs
         | ALTCOUNT number
                 { clearpointcount_alt($2); pointcount_index=12;} pointcountargs
         | CONDITION expr
-                { extern struct Tree *decisiontree; decisiontree = $2; }
+                { decisiontree = $2; }
         | IDENT '=' expr
                 { new_var($1, $3); }
         | ACTION actionlist
-                { extern struct Action *actionlist; actionlist = $2; }
+                { actionlist = $2; }
         ;
 
 predealargs
@@ -153,12 +149,12 @@ pointcountargs
 
 compass
         : COMPASS
-                { extern int use_compass[NSUITS]; use_compass[$1] = 1; $$= $1; }
+                { use_compass[$1] = 1; $$= $1; }
         ;
 
 vulnerable
         : VULNERABLE_SIDE
-                { extern int use_vulnerable[NSUITS]; use_vulnerable[$1] = 1; $$= $1; }
+                { use_vulnerable[$1] = 1; $$= $1; }
         ;
 
 shlprefix
@@ -574,8 +570,6 @@ void predeal_holding(int compass, char *holding) {
 
 #define TRUNCZ(x) ((x) < 0 ? 0 : (x))
 
-extern int biasdeal[4][4];
-extern const char *player_name[4];
 static const char *suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
 
 int bias_len(int compass) {
