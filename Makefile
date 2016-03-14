@@ -1,7 +1,7 @@
 # $Header: /home/henk/CVS/dealer/Makefile,v 1.15 1999/08/05 19:57:44 henk Exp $
 
 CXX     = g++
-CFLAGS = -Wall -pedantic -O2 -I. -DNDEBUG -DYY_NO_INPUT -Wno-deprecated-declarations -c
+CFLAGS = -Wall -pedantic -O2 -I. -DNDEBUG -DYY_NO_INPUT -Wno-deprecated-declarations --std=c++11 -c
 FLEX    = flex
 YACC    = bison
 
@@ -24,7 +24,7 @@ dealer: ${OBJ} ${LOBJ} ${YOBJ}
 	$(CC) -o $@ ${OBJ} -L./Random -lgnurand
 
 clean:
-	rm -f ${OBJ} ${LOBJ} ${YOBJ} ${OBJ:.o=.d} ${PROGRAM} defs.h
+	rm -f ${OBJ} ${LOBJ} ${YOBJ} ${OBJ:.o=.d} ${PROGRAM} defs.hpp
 	${MAKE} -C Examples clean
 	${MAKE} -C Random   clean
 
@@ -61,5 +61,8 @@ format:
 #
 %.o: %.cpp
 	${CXX} ${CFLAGS} -o $@ -MMD -MP $<
+
+# The C skeleton has register usage that generates warnings in c++11
+scan.o : CFLAGS += -Wno-deprecated-register
 
 -include $(wildcard *.d)

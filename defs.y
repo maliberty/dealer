@@ -33,7 +33,7 @@ int pointcount_index; /* global variable for pointcount communication */
 int shapeno;
 
 struct Tree *var_lookup(char *s, int mustbethere);
-struct Action *newaction(int type, struct Tree *p1, char *s1, int, struct Tree *);
+struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int, struct Tree *);
 struct Tree *newtree(int, struct Tree *, struct Tree *, int, int);
 struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1);
 void bias_deal(int suit, int compass, int length);
@@ -345,46 +345,46 @@ actionlist
 action
         : PRINTALL
                 { will_print++;
-                  $$ = newaction(ACT_PRINTALL, NIL, (char *) 0, 0, NIL);
+                  $$ = newaction(ActionType::PrintAll, NIL, (char *) 0, 0, NIL);
                 }
         | PRINTEW
                 { will_print++;
-                  $$ = newaction(ACT_PRINTEW, NIL, (char *) 0, 0, NIL);
+                  $$ = newaction(ActionType::PrintEW, NIL, (char *) 0, 0, NIL);
                 }
         | PRINT '(' printlist ')'
                 { will_print++;
-                  $$ = newaction(ACT_PRINT, NIL, (char *) 0, $3, NIL);
+                  $$ = newaction(ActionType::Print, NIL, (char *) 0, $3, NIL);
                 }
         | PRINTCOMPACT
                 { will_print++;
-                  $$=newaction(ACT_PRINTCOMPACT,NIL,0,0, NIL);}
+                  $$=newaction(ActionType::PrintCompact,NIL,0,0, NIL);}
         | PRINTONELINE
                 { will_print++;
-                  $$ = newaction(ACT_PRINTONELINE, NIL, 0, 0, NIL);}
+                  $$ = newaction(ActionType::PrintOneLine, NIL, 0, 0, NIL);}
         | PRINTPBN
                 { will_print++;
-                  $$=newaction(ACT_PRINTPBN,NIL,0,0, NIL);}
+                  $$=newaction(ActionType::PrintPBN,NIL,0,0, NIL);}
         | PRINTES '(' exprlist ')'
                 { will_print++;
-                  $$=newaction(ACT_PRINTES,(struct Tree*)$3,0,0, NIL); }
+                  $$=newaction(ActionType::PrintES,(struct Tree*)$3,0,0, NIL); }
         | EVALCONTRACT  /* should allow user to specify vuln, suit, decl */
                 { will_print++;
-                  $$=newaction(ACT_EVALCONTRACT,0,0,0, NIL);}
+                  $$=newaction(ActionType::EvalContract,0,0,0, NIL);}
         | PRINTCOMPACT '(' expr ')'
                 { will_print++;
-                  $$=newaction(ACT_PRINTCOMPACT,$3,0,0, NIL);}
+                  $$=newaction(ActionType::PrintCompact,$3,0,0, NIL);}
         | PRINTONELINE '(' expr ')'
                 { will_print++;
-                  $$=newaction(ACT_PRINTONELINE,$3,0,0, NIL);}
+                  $$=newaction(ActionType::PrintOneLine,$3,0,0, NIL);}
         | AVERAGE optstring expr
-                { $$ = newaction(ACT_AVERAGE, $3, $2, 0, NIL); }
+                { $$ = newaction(ActionType::Average, $3, $2, 0, NIL); }
         | FREQUENCY optstring '(' expr ',' number ',' number ')'
-                { $$ = newaction(ACT_FREQUENCY, $4, $2, 0, NIL);
+                { $$ = newaction(ActionType::Frequency, $4, $2, 0, NIL);
                   $$->ac_u.acu_f.acuf_lowbnd = $6;
                   $$->ac_u.acu_f.acuf_highbnd = $8;}
         | FREQUENCY optstring
            '(' expr ',' number ',' number ',' expr ',' number ',' number ')' {
-             $$ = newaction(ACT_FREQUENCY2D, $4, $2, 0, $10);
+             $$ = newaction(ActionType::Frequency2d, $4, $2, 0, $10);
              $$->ac_u.acu_f2d.acuf_lowbnd_expr1 = $6;
              $$->ac_u.acu_f2d.acuf_highbnd_expr1 = $8;
              $$->ac_u.acu_f2d.acuf_lowbnd_expr2 = $12;
@@ -525,7 +525,7 @@ struct Tree *newtree(int type, struct Tree *p1, struct Tree *p2, int i1, int i2)
     return p;
 }
 
-struct Action *newaction(int type, struct Tree *p1, char *s1, int i1, struct Tree *p2) {
+struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int i1, struct Tree *p2) {
     /* char *mycalloc(); */
     struct Action *a;
 

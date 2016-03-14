@@ -91,7 +91,7 @@ int ngen;
 
 struct Tree defaulttree = {TRT_NUMBER, NIL, NIL, 1, 0};
 struct Tree *decisiontree = &defaulttree;
-struct Action defaultaction = {(struct Action *)0, ACT_PRINTALL};
+struct Action defaultaction = {(struct Action *)0, ActionType::PrintAll};
 struct Action *actionlist = &defaultaction;
 unsigned char zero52[NRANDVALS];
 Deal *deallist;
@@ -693,7 +693,7 @@ void printdeal(Deal d) {
 }
 
 void setup_deal() {
-    register int i, j;
+    int i, j;
 
     j = 0;
     for (i = 0; i < 52; i++) {
@@ -1263,27 +1263,27 @@ void setup_action() {
         switch (acp->ac_type) {
             default:
                 assert(0); /*NOTREACHED */
-            case ACT_EVALCONTRACT:
+            case ActionType::EvalContract:
                 initevalcontract();
                 break;
-            case ACT_PRINTCOMPACT:
-            case ACT_PRINTPBN:
-            case ACT_PRINTEW:
-            case ACT_PRINTALL:
-            case ACT_PRINTONELINE:
-            case ACT_PRINTES:
+            case ActionType::PrintCompact:
+            case ActionType::PrintPBN:
+            case ActionType::PrintEW:
+            case ActionType::PrintAll:
+            case ActionType::PrintOneLine:
+            case ActionType::PrintES:
                 break;
-            case ACT_PRINT:
+            case ActionType::Print:
                 deallist = (Deal *)mycalloc(maxproduce, sizeof(Deal));
                 break;
-            case ACT_AVERAGE:
+            case ActionType::Average:
                 break;
-            case ACT_FREQUENCY:
+            case ActionType::Frequency:
                 acp->ac_u.acu_f.acuf_entries = 0;
                 acp->ac_u.acu_f.acuf_freqs =
                     (long *)mycalloc(acp->ac_u.acu_f.acuf_highbnd - acp->ac_u.acu_f.acuf_lowbnd + 1, sizeof(long));
                 break;
-            case ACT_FREQUENCY2D:
+            case ActionType::Frequency2d:
                 acp->ac_u.acu_f2d.acuf_freqs = (long *)mycalloc(
                     (acp->ac_u.acu_f2d.acuf_highbnd_expr1 - acp->ac_u.acu_f2d.acuf_lowbnd_expr1 + 3) *
                         (acp->ac_u.acu_f2d.acuf_highbnd_expr2 - acp->ac_u.acu_f2d.acuf_lowbnd_expr2 + 3),
@@ -1301,14 +1301,14 @@ void action() {
         switch (acp->ac_type) {
             default:
                 assert(0); /*NOTREACHED */
-            case ACT_PRINTCOMPACT:
+            case ActionType::PrintCompact:
                 printcompact(curdeal);
                 if (acp->ac_expr1) {
                     expr = evaltree(acp->ac_expr1);
                     printf("%d\n", expr);
                 }
                 break;
-            case ACT_PRINTONELINE:
+            case ActionType::PrintOneLine:
                 printoneline(curdeal);
                 if (acp->ac_expr1) {
                     expr = evaltree(acp->ac_expr1);
@@ -1317,7 +1317,7 @@ void action() {
                 printf("\n");
                 break;
 
-            case ACT_PRINTES: {
+            case ActionType::PrintES: {
                 struct Expr *pex = (struct Expr *)acp->ac_expr1;
                 while (pex) {
                     if (pex->ex_tr) {
@@ -1330,23 +1330,23 @@ void action() {
                     pex = pex->next;
                 }
             } break;
-            case ACT_PRINTALL:
+            case ActionType::PrintAll:
                 printdeal(curdeal);
                 break;
-            case ACT_PRINTEW:
+            case ActionType::PrintEW:
                 printew(curdeal);
                 break;
-            case ACT_PRINTPBN:
+            case ActionType::PrintPBN:
                 if (!quiet)
                     printpbn(nprod, curdeal);
                 break;
-            case ACT_PRINT:
+            case ActionType::Print:
                 memcpy(deallist[nprod], curdeal, sizeof(Deal));
                 break;
-            case ACT_AVERAGE:
+            case ActionType::Average:
                 acp->ac_int1 += evaltree(acp->ac_expr1);
                 break;
-            case ACT_FREQUENCY:
+            case ActionType::Frequency:
                 expr = evaltree(acp->ac_expr1);
                 if (expr < acp->ac_u.acu_f.acuf_lowbnd)
                     acp->ac_u.acu_f.acuf_uflow++;
@@ -1356,7 +1356,7 @@ void action() {
                     acp->ac_u.acu_f.acuf_freqs[expr - acp->ac_u.acu_f.acuf_lowbnd]++;
                 acp->ac_u.acu_f.acuf_entries++;
                 break;
-            case ACT_FREQUENCY2D:
+            case ActionType::Frequency2d:
                 expr = evaltree(acp->ac_expr1);
                 expr2 = evaltree(acp->ac_expr2);
 
@@ -1426,17 +1426,17 @@ void cleanup_action() {
         switch (acp->ac_type) {
             default:
                 assert(0); /*NOTREACHED */
-            case ACT_PRINTALL:
-            case ACT_PRINTCOMPACT:
-            case ACT_PRINTPBN:
-            case ACT_PRINTEW:
-            case ACT_PRINTONELINE:
-            case ACT_PRINTES:
+            case ActionType::PrintAll:
+            case ActionType::PrintCompact:
+            case ActionType::PrintPBN:
+            case ActionType::PrintEW:
+            case ActionType::PrintOneLine:
+            case ActionType::PrintES:
                 break;
-            case ACT_EVALCONTRACT:
+            case ActionType::EvalContract:
                 showevalcontract(nprod);
                 break;
-            case ACT_PRINT:
+            case ActionType::Print:
                 for (player = COMPASS_NORTH; player <= COMPASS_WEST; player++) {
                     if (!(acp->ac_int1 & (1 << player)))
                         continue;
@@ -1446,12 +1446,12 @@ void cleanup_action() {
                     printf("\f");
                 }
                 break;
-            case ACT_AVERAGE:
+            case ActionType::Average:
                 if (acp->ac_str1)
                     printf("%s: ", acp->ac_str1);
                 printf("%g\n", (double)acp->ac_int1 / nprod);
                 break;
-            case ACT_FREQUENCY: {
+            case ActionType::Frequency: {
                 struct Acuft *f = &acp->ac_u.acu_f;
                 printf("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
                 if (f->acuf_uflow)
@@ -1463,7 +1463,7 @@ void cleanup_action() {
                     printf("High \t%8ld\t%5.2f %%\n", f->acuf_oflow, percent(f->acuf_oflow, f->acuf_entries));
                 break;
             }
-            case ACT_FREQUENCY2D: {
+            case ActionType::Frequency2d: {
                 int j, n = 0, low1 = 0, high1 = 0, low2 = 0, high2 = 0, sumrow, sumtot, sumcol;
                 printf("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
                 high1 = acp->ac_u.acu_f2d.acuf_highbnd_expr1;

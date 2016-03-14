@@ -121,9 +121,23 @@ struct Acuft2d {
     long *acuf_freqs;
 };
 
+enum class ActionType {
+    PrintAll,
+    Print,
+    Average,
+    Frequency,
+    PrintCompact,
+    EvalContract,
+    PrintPBN,
+    PrintEW,
+    Frequency2d,
+    PrintOneLine,
+    PrintES
+};
+
 struct Action {
     struct Action *ac_next;
-    int ac_type;
+    ActionType ac_type;
     struct Tree *ac_expr1;
     struct Tree *ac_expr2;
     int ac_int1;
@@ -133,18 +147,6 @@ struct Action {
         struct Acuft2d acu_f2d;
     } ac_u;
 };
-
-#define ACT_PRINTALL 0
-#define ACT_PRINT 1
-#define ACT_AVERAGE 2
-#define ACT_FREQUENCY 3
-#define ACT_PRINTCOMPACT 4
-#define ACT_EVALCONTRACT 5
-#define ACT_PRINTPBN 6
-#define ACT_PRINTEW 7
-#define ACT_FREQUENCY2D 8
-#define ACT_PRINTONELINE 9
-#define ACT_PRINTES 10
 
 /* Constants for CCCC and Quality */
 
