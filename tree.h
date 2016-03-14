@@ -158,8 +158,4 @@ struct Action {
 #define RK_NINE 7
 #define RK_EIGHT 6
 
-#ifdef WIN32
-#define bcopy(s, t, size) memcpy(t, s, size)
-#endif
-
 #endif /* TREE_H */

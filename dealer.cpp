@@ -9,36 +9,11 @@ long seed = 0;
 int quiet = 0;
 char *input_file = 0;
 
-#ifdef _MSC_VER
-/* with VC++6, winsock2 declares ntohs and struct timeval */
-#pragma warning(disable : 4115)
-#include <winsock2.h>
-#pragma warning(default : 4115)
-#else
-/* else we assume we can get ntohs/ntohl from netinet */
 #include <netinet/in.h>
-#endif /* _MSC_VER */
-
-#ifdef WIN32
-#ifndef _MSC_VER
-struct timeval {
-    long tv_sec;  /* seconds */
-    long tv_usec; /* and microseconds */
-};
-#endif /* _MSC_VER */
-#pragma warning(disable : 4100)
-void gettimeofday(struct timeval *tv, void *pv) {
-    tv->tv_sec = time(0);
-    tv->tv_usec = 0;
-}
-#pragma warning(default : 4100)
-#else
 #include <unistd.h>
 #include <sys/time.h>
-#endif /* WIN32 */
 
 #include "getopt.h"
-
 #include "tree.h"
 #include "pointcount.h"
 #include "dealer.h"

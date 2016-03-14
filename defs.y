@@ -1,14 +1,6 @@
 %{
 #include <stdio.h>
 #include <string.h>
-
-#ifdef WIN32
-
-// void * _alloca( size_t ) ;
-#define alloca _alloca
-
-#endif /* WIN32 */
-
 #include <stdlib.h>
 #include "tree.h"
 #include "dealer.h"
@@ -601,13 +593,3 @@ void bias_deal(int suit, int compass, int length) {
         yyerror(s);
     }
 }
-
-#define YY_USE_PROTOS
-
-#ifdef WIN32
-#pragma warning(disable : 4127)
-#endif
-
-#ifdef WIN32
-#pragma warning(default : 4127)
-#endif
