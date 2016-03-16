@@ -10,14 +10,14 @@ static int predeal_compass;
 static int pointcount_index;
 static int shapeno;
 
-static struct Tree *var_lookup(char *s, int mustbethere);
-static struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int, struct Tree *);
-static struct Tree *newtree(int, struct Tree *, struct Tree *, int, int);
-static struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1);
+static Tree *var_lookup(char *s, int mustbethere);
+static Action *newaction(ActionType type, const Tree *p1, char *s1, int, const Tree *);
+static Tree *newtree(int, const Tree *, const Tree *, int, int);
+static Expr *newexpr(Tree *tr1, char *ch1, Expr *ex1);
 static void bias_deal(int suit, int compass, int length);
 static void predeal_holding(int compass, char *holding);
 static void insertshape(char s[4], int any, int neg_shape);
-static void new_var(char *s, struct Tree *t);
+static void new_var(char *s, Tree *t);
 
 // from scan.cpp
 extern int yylineno;
@@ -343,7 +343,7 @@ action
                   $$=newaction(ActionType::PrintPBN,NIL,0,0, NIL);}
         | PRINTES '(' exprlist ')'
                 { will_print++;
-                  $$=newaction(ActionType::PrintES,(struct Tree*)$3,0,0, NIL); }
+                  $$=newaction(ActionType::PrintES,(Tree*) $3, 0, 0, NIL); }
         | EVALCONTRACT  /* should allow user to specify vuln, suit, decl */
                 { will_print++;
                   $$=newaction(ActionType::EvalContract,0,0,0, NIL);}
@@ -383,13 +383,13 @@ printlist
 %%
 
 static struct var {
-    struct var *v_next;
+    var *v_next;
     char *v_ident;
-    struct Tree *v_tree;
+    Tree *v_tree;
 } *vars = 0;
 
-static struct Tree *var_lookup(char *s, int mustbethere) {
-    struct var *v;
+static Tree *var_lookup(char *s, int mustbethere) {
+    var *v;
 
     for (v = vars; v != 0; v = v->v_next)
         if (strcmp(s, v->v_ident) == 0)
@@ -399,13 +399,13 @@ static struct Tree *var_lookup(char *s, int mustbethere) {
     return 0;
 }
 
-static void new_var(char *s, struct Tree *t) {
-    struct var *v;
+static void new_var(char *s, Tree *t) {
+    var *v;
     /* char *mycalloc(); */
 
     if (var_lookup(s, 0) != 0)
         yyerror("redefined variable");
-    v = (struct var *)mycalloc(1, sizeof(*v));
+    v = (var *)mycalloc(1, sizeof(*v));
     v->v_next = vars;
     v->v_ident = s;
     v->v_tree = t;
@@ -489,11 +489,11 @@ static int d2n(char s[4]) {
     return atoi(copys);
 }
 
-static struct Tree *newtree(int type, struct Tree *p1, struct Tree *p2, int i1, int i2) {
+static Tree *newtree(int type, const Tree *p1, const Tree *p2, int i1, int i2) {
     /* char *mycalloc(); */
-    struct Tree *p;
+    Tree *p;
 
-    p = (struct Tree *)mycalloc(1, sizeof(*p));
+    p = (Tree *)mycalloc(1, sizeof(*p));
     p->tr_type = type;
     p->tr_leaf1 = p1;
     p->tr_leaf2 = p2;
@@ -502,11 +502,11 @@ static struct Tree *newtree(int type, struct Tree *p1, struct Tree *p2, int i1, 
     return p;
 }
 
-static struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int i1, struct Tree *p2) {
+static Action *newaction(ActionType type, const Tree *p1, char *s1, int i1, const Tree *p2) {
     /* char *mycalloc(); */
-    struct Action *a;
+    Action *a;
 
-    a = (struct Action *)mycalloc(1, sizeof(*a));
+    a = (Action *)mycalloc(1, sizeof(*a));
     a->ac_type = type;
     a->ac_expr1 = p1;
     a->ac_str1 = s1;
@@ -515,14 +515,14 @@ static struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int 
     return a;
 }
 
-static struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1) {
-    struct Expr *e;
-    e = (struct Expr *)mycalloc(1, sizeof(*e));
+static Expr *newexpr(Tree *tr1, char *ch1, Expr *ex1) {
+    Expr *e;
+    e = (Expr *)mycalloc(1, sizeof(*e));
     e->ex_tr = tr1;
     e->ex_ch = ch1;
     e->next = 0;
     if (ex1) {
-        struct Expr *exau = ex1;
+        Expr *exau = ex1;
         /* AM990705: the while's body had mysteriously disappeared, reinserted it */
         while (exau->next)
             exau = exau->next;

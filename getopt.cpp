@@ -362,8 +362,8 @@ static int _getopt_internal(int argc, char *const *argv, const char *optstring, 
     if (longopts != NULL &&
         (argv[optind][1] == '-' || (long_only && (argv[optind][2] || !my_index(optstring, argv[optind][1]))))) {
         char *nameend;
-        const struct option *p;
-        const struct option *pfound = NULL;
+        const option *p;
+        const option *pfound = NULL;
         int exact = 0;
         int ambig = 0;
         int indfound = 0;

@@ -57,8 +57,8 @@ static int results[2][5][14];
 static int nprod;
 static int ngen;
 
-static struct Tree defaulttree = {TRT_NUMBER, NIL, NIL, 1, 0};
-static struct Action defaultaction = {(struct Action *)0, ActionType::PrintAll};
+static Tree defaulttree = {TRT_NUMBER, NIL, NIL, 1, 0};
+static Action defaultaction = {(Action *)0, ActionType::PrintAll};
 static unsigned char zero52[NRANDVALS];
 static Deal *deallist;
 
@@ -72,7 +72,7 @@ extern void yyparse();
 
 /* globals */
 Deal curdeal;
-struct Handstat hs[4];
+Handstat hs[4];
 char *input_file = 0;
 int maxgenerate;
 int maxdealer;
@@ -83,9 +83,10 @@ int use_compass[NSUITS];
 int use_vulnerable[NSUITS];
 int verbose;
 int will_print;
-struct Tree *decisiontree = &defaulttree;
-struct Action *actionlist = &defaultaction;
+Tree *decisiontree = &defaulttree;
+Action *actionlist = &defaultaction;
 const char *player_name[] = {"North", "East", "South", "West"};
+const Tree *NIL = nullptr;
 
 #ifdef FRANCOIS
 /* Special variables for exhaustive mode
@@ -468,13 +469,13 @@ int make_contract(char suitchar, char trickchar) {
     return MAKECONTRACT(suit, trick);
 }
 
-static void analyze(Deal d, struct Handstat *hsbase) {
+static void analyze(Deal d, Handstat *hsbase) {
     /* Analyze a hand.  Modified by HU to count controls and losers. */
     /* Further mod by AM to count several alternate pointcounts too  */
 
     int player, next, c, r, s, t;
     Card curcard;
-    struct Handstat *hs;
+    Handstat *hs;
 
     /* for each player */
     for (player = COMPASS_NORTH; player <= COMPASS_WEST; ++player) {
@@ -485,7 +486,7 @@ static void analyze(Deal d, struct Handstat *hsbase) {
             /* In debug mode, blast the unused handstat, so that we can recognize it
                as garbage should if we accidently read from it */
             hs = hsbase + player;
-            memset(hs, 0xDF, sizeof(struct Handstat));
+            memset(hs, 0xDF, sizeof(Handstat));
 #endif /* _DEBUG_ */
 
             continue;
@@ -494,11 +495,11 @@ static void analyze(Deal d, struct Handstat *hsbase) {
         hs = hsbase + player;
 
         /* Initialize the handstat structure */
-        memset(hs, 0x00, sizeof(struct Handstat));
+        memset(hs, 0x00, sizeof(Handstat));
 
 #ifdef _DEBUG
         /* To debug, blast it with garbage.... */
-        memset(hs, 0xDF, sizeof(struct Handstat));
+        memset(hs, 0xDF, sizeof(Handstat));
 
         /* then overwrite those specific counters which need to be incremented */
         for (t = idxHcp; t < idxEnd; ++t) {
@@ -926,7 +927,7 @@ void exh_map_cards(void) {
     }
 }
 
-void exh_print_stats(struct Handstat *hs) {
+void exh_print_stats(Handstat *hs) {
     int s;
     for (s = SUIT_CLUB; s <= SUIT_SPADE; s++) {
         printf("  Suit %d: ", s);
@@ -935,10 +936,10 @@ void exh_print_stats(struct Handstat *hs) {
     printf("  Totalpoints: %2d\n", hs->hs_totalhcp);
 }
 
-void exh_print_vector(struct Handstat *hs) {
+void exh_print_vector(Handstat *hs) {
     int i, s, r;
     int onecard;
-    struct Handstat *hsp;
+    Handstat *hsp;
 
     printf("Player %d: ", exh_player[0]);
     for (i = 0; i < 26; i++) {
@@ -1016,12 +1017,12 @@ void exh_precompute_analyse_tables(void) {
     exh_total_points = exh_lsb_totalpoints[0] + exh_msb_totalpoints[0];
 }
 
-void exh_analyze_vec(int high_vec, int low_vec, struct Handstat *hs) {
+void exh_analyze_vec(int high_vec, int low_vec, Handstat *hs) {
     /* analyse the 2 remaining hands with the vectordeal data-structure.
        This is VERY fast !!!  */
     int s;
-    struct Handstat *hs0;
-    struct Handstat *hs1;
+    Handstat *hs0;
+    Handstat *hs1;
     hs0 = hs + exh_player[0];
     hs1 = hs + exh_player[1];
     hs0->hs_totalhcp = hs1->hs_totalhcp = 0;
@@ -1048,7 +1049,7 @@ int trix(char c) {
     return c - 'A' + 10;
 }
 
-static int evaltree(struct Tree *t) {
+static int evaltree(const Tree *t) {
     switch (t->tr_type) {
         default:
             assert(0);
@@ -1226,7 +1227,7 @@ int interesting () {
 #define interesting() ((int)evaltree(decisiontree))
 
 static void setup_action() {
-    struct Action *acp;
+    Action *acp;
 
     /* Initialize all actions */
     for (acp = actionlist; acp != 0; acp = acp->ac_next) {
@@ -1264,7 +1265,7 @@ static void setup_action() {
 }
 
 static void action() {
-    struct Action *acp;
+    Action *acp;
     int expr, expr2, val1, val2, high1 = 0, high2 = 0, low1 = 0, low2 = 0;
 
     for (acp = actionlist; acp != 0; acp = acp->ac_next) {
@@ -1288,7 +1289,7 @@ static void action() {
                 break;
 
             case ActionType::PrintES: {
-                struct Expr *pex = (struct Expr *)acp->ac_expr1;
+                Expr *pex = (Expr *)acp->ac_expr1;
                 while (pex) {
                     if (pex->ex_tr) {
                         expr = evaltree(pex->ex_tr);
@@ -1389,7 +1390,7 @@ static float percent(int n, int d) {
 }
 
 static void cleanup_action() {
-    struct Action *acp;
+    Action *acp;
     int player, i;
 
     for (acp = actionlist; acp != 0; acp = acp->ac_next) {
@@ -1422,7 +1423,7 @@ static void cleanup_action() {
                 printf("%g\n", (double)acp->ac_int1 / nprod);
                 break;
             case ActionType::Frequency: {
-                struct Acuft *f = &acp->ac_u.acu_f;
+                Acuft *f = &acp->ac_u.acu_f;
                 printf("Frequency %s:\n", acp->ac_str1 ? acp->ac_str1 : "");
                 if (f->acuf_uflow)
                     printf("Low  \t%8ld\t%5.2f %%\n", f->acuf_uflow, percent(f->acuf_uflow, f->acuf_entries));
@@ -1513,7 +1514,7 @@ int main(int argc, char **argv) {
     int progressmeter = 0;
     int i = 0;
 
-    struct timeval tvstart, tvstop;
+    timeval tvstart, tvstop;
 
     verbose = 1;
 

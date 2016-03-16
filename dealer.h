@@ -32,7 +32,7 @@ struct Handstat {
     int hs_totalcounts[idxEnd];    /* totals of the above */
 };
 
-extern struct Handstat hs[4];
+extern Handstat hs[4];
 
 extern Deal curdeal;
 
@@ -41,8 +41,8 @@ extern int maxdealer;
 extern int maxvuln;
 extern int maxproduce;
 extern int will_print;
-extern struct Tree *decisiontree;
-extern struct Action *actionlist;
+extern Tree *decisiontree;
+extern Action *actionlist;
 extern int use_compass[NSUITS];
 extern int use_vulnerable[NSUITS];
 extern long seed;
@@ -62,10 +62,32 @@ extern int make_contract(char suitchar, char trickchar);
 
 #ifdef FRANCOIS
 int hascard(Deal, int, Card, int);
-#define HAS_CARD(d, p, c) hascard(d, p, c, 0)
+inline int HAS_CARD(Deal d, int p, Card c) {
+    return hascard(d, p, c, 0);
+}
 #else
 int hascard(Deal, int, Card);
-#define HAS_CARD(d, p, c) hascard(d, p, c)
+inline int HAS_CARD(Deal d, int p, Card c) {
+    return hascard(d, p, c);
+}
 #endif
+
+inline Card MAKECARD(int suit, int rank) {
+    return (Card)((suit << 6) | rank);
+}
+
+inline int MAKECONTRACT(int suit, int tricks) {
+    return tricks * 5 + suit;
+}
+
+inline int C_SUIT(Card c) {
+    return c >> 6;
+}
+
+inline int C_RANK(Card c) {
+    return c & 0x3F;
+}
+
+const Card NO_CARD = 0xFF;
 
 #endif /* DEALER_H */

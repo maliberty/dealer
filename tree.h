@@ -6,18 +6,18 @@
 
 struct Tree {
     int tr_type;
-    struct Tree *tr_leaf1, *tr_leaf2;
+    const Tree *tr_leaf1, *tr_leaf2;
     int tr_int1;
     int tr_int2;
 };
 
 struct Expr {
-    struct Tree *ex_tr;
+    const Tree *ex_tr;
     char *ex_ch;
-    struct Expr *next;
+    Expr *next;
 };
 
-#define NIL ((struct Tree *)0)
+extern const Tree *NIL;
 
 #define SUIT_CLUB 0
 #define SUIT_DIAMOND 1
@@ -25,13 +25,6 @@ struct Expr {
 #define SUIT_SPADE 3
 #define SUIT_NT 4
 #define NSUITS 4
-
-#define MAKECARD(suit, rank) ((Card)(((suit) << 6) | (rank)))
-
-#define MAKECONTRACT(suit, tricks) (tricks * 5 + suit)
-#define C_SUIT(c) ((c) >> 6)
-#define C_RANK(c) ((c)&0x3F)
-#define NO_CARD 0xFF
 
 #define COMPASS_NORTH 0
 #define COMPASS_EAST 1
@@ -136,15 +129,15 @@ enum class ActionType {
 };
 
 struct Action {
-    struct Action *ac_next;
+    Action *ac_next;
     ActionType ac_type;
-    struct Tree *ac_expr1;
-    struct Tree *ac_expr2;
+    const Tree *ac_expr1;
+    const Tree *ac_expr2;
     int ac_int1;
     char *ac_str1;
     union {
-        struct Acuft acu_f;
-        struct Acuft2d acu_f2d;
+        Acuft acu_f;
+        Acuft2d acu_f2d;
     } ac_u;
 };
 
