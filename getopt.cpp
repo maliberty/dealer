@@ -139,8 +139,7 @@ static int last_nonopt;
    `first_nonopt' and `last_nonopt' are relocated so that they describe
    the new indices of the non-options in ARGV after they are moved.  */
 
-static void exchange(char **argv)
-{
+static void exchange(char **argv) {
     int bottom = first_nonopt;
     int middle = last_nonopt;
     int top = optind;
@@ -189,8 +188,7 @@ static void exchange(char **argv)
 
 /* Initialize the internal data when the first call is made.  */
 
-static const char *_getopt_initialize(const char *optstring)
-{
+static const char *_getopt_initialize(const char *optstring) {
     /* Start processing options with ARGV-element 1 (since ARGV-element 0
        is the program name); the sequence of previously skipped
        non-option ARGV-elements is empty.  */
@@ -273,13 +271,8 @@ static const char *_getopt_initialize(const char *optstring)
    If LONG_ONLY is nonzero, '-' as well as '--' can introduce
    long-named options.  */
 
-int _getopt_internal(int argc,
-                     char *const *argv,
-                     const char *optstring,
-                     const struct option *longopts,
-                     int *longind,
-                     int long_only)
-{
+int _getopt_internal(int argc, char *const *argv, const char *optstring, const struct option *longopts, int *longind,
+                     int long_only) {
     optarg = NULL;
 
     if (optind == 0) {
@@ -527,7 +520,6 @@ int _getopt_internal(int argc,
     }
 }
 
-int mygetopt(int argc, char *const *argv, const char *optstring)
-{
-    return _getopt_internal(argc, argv, optstring, (const struct option *)0, (int *)0, 0); 
+int mygetopt(int argc, char *const *argv, const char *optstring) {
+    return _getopt_internal(argc, argv, optstring, (const struct option *)0, (int *)0, 0);
 }

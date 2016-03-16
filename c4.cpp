@@ -23,8 +23,7 @@ basically a no-op.
 #include "dealer.h"
 #include "c4.h"
 
-int has_card2(int s, int r, int seat)
-{
+int has_card2(int s, int r, int seat) {
     return HAS_CARD(curdeal, seat, (Card)MAKECARD(s, r));
 }
 

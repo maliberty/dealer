@@ -22,14 +22,16 @@ char *input_file = 0;
 
 void yyerror(const char *);
 
-#define TWO_TO_THE_13 (1 << 13)
-#define DEFAULT_MODE STAT_MODE
-#define RANDBITS 16
-#define NRANDVALS (1 << RANDBITS)
+#ifdef FRANCOIS
+static const int TWO_TO_THE_13 = (1 << 13);
+#endif
+static const int RANDBITS = 16;
+static const int NRANDVALS = (1 << RANDBITS);
 
 /* Global variables */
 
 enum { STAT_MODE, EXHAUST_MODE };
+static const int DEFAULT_MODE = STAT_MODE;
 static int computing_mode = DEFAULT_MODE;
 
 const char *player_name[] = {"North", "East", "South", "West"};
@@ -41,45 +43,40 @@ char ucrep[] = "23456789TJQKA";
 
 int biasdeal[4][4] = {{-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}};
 
-int imparr[24] = {10,  40,  80,   120,  160,  210,  260,  310,  360,  410,  490,  590,
-                  740, 890, 1090, 1190, 1490, 1740, 1990, 2240, 2490, 2990, 3490, 3990};
+static const int imparr[24] = {10,  40,  80,   120,  160,  210,  260,  310,  360,  410,  490,  590,
+                               740, 890, 1090, 1190, 1490, 1740, 1990, 2240, 2490, 2990, 3490, 3990};
 
-Deal fullpack;
-Deal stacked_pack;
+static Deal fullpack;
+static Deal stacked_pack;
 
-int swapping = 0;
-int swapindex = 0;
-int loading = 0;
-int loadindex = 0;
+static int swapping = 0;
+static int swapindex = 0;
+static int loading = 0;
+static int loadindex = 0;
 
 /* Various handshapes can be asked for. For every shape the user is
    interested in a number is generated. In every distribution that fits that
    shape the corresponding bit is set in the distrbitmaps 4-dimensional array.
    This makes looking up a shape a small constant cost.
 */
-#define MAXDISTR 8 * sizeof(int)
-int ***distrbitmaps[14];
+static int ***distrbitmaps[14];
 
-int results[2][5][14];
-int use_compass[NSUITS];
-int use_vulnerable[NSUITS];
-int nprod, maxproduce;
-int ngen;
+static int results[2][5][14];
+static int nprod;
+static int ngen;
 
-struct Tree defaulttree = {TRT_NUMBER, NIL, NIL, 1, 0};
-struct Tree *decisiontree = &defaulttree;
-struct Action defaultaction = {(struct Action *)0, ActionType::PrintAll};
-struct Action *actionlist = &defaultaction;
-unsigned char zero52[NRANDVALS];
-Deal *deallist;
+static struct Tree defaulttree = {TRT_NUMBER, NIL, NIL, 1, 0};
+static struct Action defaultaction = {(struct Action *)0, ActionType::PrintAll};
+static unsigned char zero52[NRANDVALS];
+static Deal *deallist;
 
 /* Function definitions */
-void fprintcompact(FILE *, Deal, int);
-int trix(char);
-void error(const char *);
-void printew(Deal d);
-void yyparse();
-int true_dd(Deal d, int l, int c); /* prototype */
+static void fprintcompact(FILE *, Deal, int);
+static int trix(char);
+static void error(const char *);
+static void printew(Deal d);
+static int true_dd(Deal d, int l, int c); /* prototype */
+extern void yyparse();
 
 /* globals */
 int verbose;
@@ -89,7 +86,11 @@ int maxgenerate;
 int maxdealer;
 int maxvuln;
 int will_print;
-
+int maxproduce;
+int use_compass[NSUITS];
+int use_vulnerable[NSUITS];
+struct Tree *decisiontree = &defaulttree;
+struct Action *actionlist = &defaultaction;
 
 #ifdef FRANCOIS
 /* Special variables for exhaustive mode
@@ -347,7 +348,7 @@ void pointcount(int index, int value) {
 }
 
 void *mycalloc(unsigned nel, size_t siz) {
-    void* p = calloc(nel, siz);
+    void *p = calloc(nel, siz);
     if (p)
         return p;
     fprintf(stderr, "Out of memory\n");
@@ -1175,7 +1176,6 @@ int evaltree(struct Tree *t) {
             return hs[t->tr_int1].hs_counts[idxC13][t->tr_int2];
         case TRT_SHAPE: /* compass, shapemask */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
-            /* assert (t->tr_int2 >= 0 && t->tr_int2 < MAXDISTR); */
             return (hs[t->tr_int1].hs_bits & t->tr_int2) != 0;
         case TRT_HASCARD: /* compass, card */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
@@ -1276,14 +1276,14 @@ void action() {
             default:
                 assert(0); /*NOTREACHED */
             case ActionType::PrintCompact:
-                printcompact(curdeal);
+                fprintcompact(stdout, curdeal, 0);
                 if (acp->ac_expr1) {
                     expr = evaltree(acp->ac_expr1);
                     printf("%d\n", expr);
                 }
                 break;
             case ActionType::PrintOneLine:
-                printoneline(curdeal);
+                fprintcompact(stdout, curdeal, 1);
                 if (acp->ac_expr1) {
                     expr = evaltree(acp->ac_expr1);
                     printf("%d", expr);

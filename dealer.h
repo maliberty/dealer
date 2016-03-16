@@ -53,10 +53,6 @@ extern int biasdeal[4][4];
 extern long seed;
 extern char *input_file;
 
-
-#define printcompact(d) (fprintcompact(stdout, d, 0))
-#define printoneline(d) (fprintcompact(stdout, d, 1))
-
 #ifdef FRANCOIS
 int hascard(Deal, int, Card, int);
 #define HAS_CARD(d, p, c) hascard(d, p, c, 0)
