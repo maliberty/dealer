@@ -356,7 +356,7 @@ void *mycalloc(unsigned nel, size_t siz) {
     exit(-1); /*NOTREACHED */
 }
 
-void initdistr() {
+static void initdistr() {
     int ***p4, **p3, *p2;
     int clubs, diamonds, hearts;
 
