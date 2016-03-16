@@ -4,7 +4,8 @@
 #include "dealer.h"
 
 void yyerror(const char *);
-char *mystrcpy(const char *s);
+static char *mystrcpy(const char *s);
+void *mycalloc(unsigned, size_t);
 %}
 
 %x COMMENT
@@ -127,3 +128,10 @@ rnd             return(RND);
 ^\#.*\n         ;
 .               return(yytext[0]);
 
+%%
+
+static char *mystrcpy(const char *s) {
+    char *cs = (char *) mycalloc(strlen(s) + 1, sizeof(char));
+    strcpy(cs, s);
+    return cs;
+}

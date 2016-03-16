@@ -544,12 +544,6 @@ static struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1) {
     }
 }
 
-char *mystrcpy(const char *s) {
-    char *cs = (char *) mycalloc(strlen(s) + 1, sizeof(char));
-    strcpy(cs, s);
-    return cs;
-}
-
 static void predeal_holding(int compass, char *holding) {
     char suit;
 
