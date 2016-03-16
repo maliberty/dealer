@@ -6,7 +6,7 @@
 #include <limits.h>
 
 long seed = 0;
-int quiet = 0;
+static int quiet = 0;
 char *input_file = 0;
 
 #include <netinet/in.h>
@@ -155,7 +155,7 @@ int *HAM_T[14], Tsize[14];
 int completely_known_hand[4] = {0, 0, 0, 0};
 #endif /* FRANCOIS */
 
-void initevalcontract() {
+static void initevalcontract() {
     int i, j, k;
     for (i = 0; i < 2; i++)
         for (j = 0; j < 5; j++)
@@ -163,7 +163,7 @@ void initevalcontract() {
                 results[i][j][k] = 0;
 }
 
-int imps(int scorediff) {
+static int imps(int scorediff) {
     int i, j;
     j = abs(scorediff);
     for (i = 0; i < 24; i++)
@@ -172,7 +172,7 @@ int imps(int scorediff) {
     return scorediff < 0 ? -i : i;
 }
 
-int score(int vuln, int suit, int level, int tricks) {
+static int score(int vuln, int suit, int level, int tricks) {
     int total = 0;
 
     /* going down */
@@ -212,7 +212,7 @@ int score(int vuln, int suit, int level, int tricks) {
     return total;
 }
 
-void showevalcontract(int nh) {
+static void showevalcontract(int nh) {
     int s, l, i, v;
     for (v = 0; v < 2; v++) {
         printf("%sVulnerable\n", v ? "" : "Not ");
@@ -236,7 +236,7 @@ void showevalcontract(int nh) {
     }
 }
 
-int dd(Deal d, int l, int c) {
+static int dd(Deal d, int l, int c) {
     /* results-cached version of dd() */
     /* the dd cache, and the ngen it refers to */
     static int cached_ngen = -1;
@@ -256,13 +256,13 @@ int dd(Deal d, int l, int c) {
     return cached_tricks[l][c];
 }
 
-struct tagLibdeal {
+static struct tagLibdeal {
     unsigned long suits[4];
     unsigned short tricks[5];
     int valid;
 } libdeal;
 
-int get_tricks(int pn, int dn) {
+static int get_tricks(int pn, int dn) {
     int tk = libdeal.tricks[dn];
     int resu;
     resu = (pn ? (tk >> (4 * pn)) : tk) & 0x0F;
@@ -303,6 +303,7 @@ int true_dd(Deal d, int l, int c) {
     }
 }
 
+// FIXME: no caller and incomplete!
 void evalcontract() {
     int s;
     for (s = 0; s < 5; s++) {
@@ -318,9 +319,9 @@ void error(const char *s) {
 
 /* implementations of regular & alternate pointcounts */
 
-int countindex = -1;
+static int countindex = -1;
 
-void zerocount(int points[13]) {
+static void zerocount(int points[13]) {
     int i;
     for (i = 12; i >= 0; i--)
         points[i] = 0;
@@ -382,7 +383,7 @@ void setshapebit(int cl, int di, int ht, int sp, int msk, int excepted) {
         distrbitmaps[cl][di][ht][sp] |= msk;
 }
 
-void newpack(Deal d) {
+static void newpack(Deal d) {
     int suit, rank, place;
 
     place = 0;
@@ -472,7 +473,7 @@ int make_contract(char suitchar, char trickchar) {
     return MAKECONTRACT(suit, trick);
 }
 
-void analyze(Deal d, struct Handstat *hsbase) {
+static void analyze(Deal d, struct Handstat *hsbase) {
     /* Analyze a hand.  Modified by HU to count controls and losers. */
     /* Further mod by AM to count several alternate pointcounts too  */
 
@@ -638,7 +639,7 @@ void fprintcompact(FILE *f, Deal d, int ononeline) {
     }
 }
 
-void printdeal(Deal d) {
+static void printdeal(Deal d) {
     int suit, player, rank, cards;
 
     printf("%4d.\n", (nprod + 1));
@@ -667,7 +668,7 @@ void printdeal(Deal d) {
     printf("\n");
 }
 
-void setup_deal() {
+static void setup_deal() {
     int i, j;
 
     j = 0;
@@ -700,7 +701,7 @@ void predeal(int player, Card onecard) {
     yyerror("Card predealt twice");
 }
 
-void initprogram() {
+static void initprogram() {
     int i, i_cycle;
     int val;
 
@@ -730,7 +731,7 @@ void initprogram() {
     }
 }
 
-void swap2(Deal d, int p1, int p2) {
+static void swap2(Deal d, int p1, int p2) {
     /* functions to assist "simulated" shuffling with player
        swapping or loading from Ginsberg's library.dat -- AM990423 */
     Card t;
@@ -744,7 +745,7 @@ void swap2(Deal d, int p1, int p2) {
     }
 }
 
-FILE *find_library(const char *basename, const char *openopt) {
+static FILE *find_library(const char *basename, const char *openopt) {
     static const char *prefixes[] = {
         "", "./", "../", "../../", "c:/", "c:/data/", "d:/myprojects/dealer/", "d:/arch/games/gib/", 0};
     int i;
@@ -760,7 +761,7 @@ FILE *find_library(const char *basename, const char *openopt) {
     return result;
 }
 
-int shuffle(Deal d) {
+static int shuffle(Deal d) {
     int i, j, k;
     Card t;
 
@@ -1052,7 +1053,7 @@ int trix(char c) {
     return c - 'A' + 10;
 }
 
-int evaltree(struct Tree *t) {
+static int evaltree(struct Tree *t) {
     switch (t->tr_type) {
         default:
             assert(0);
@@ -1229,7 +1230,7 @@ int interesting () {
 */
 #define interesting() ((int)evaltree(decisiontree))
 
-void setup_action() {
+static void setup_action() {
     struct Action *acp;
 
     /* Initialize all actions */
@@ -1267,7 +1268,7 @@ void setup_action() {
     }
 }
 
-void action() {
+static void action() {
     struct Action *acp;
     int expr, expr2, val1, val2, high1 = 0, high2 = 0, low1 = 0, low2 = 0;
 
@@ -1358,7 +1359,7 @@ void action() {
     }
 }
 
-void printhands(int boardno, Deal *dealp, int player, int nhands) {
+static void printhands(int boardno, Deal *dealp, int player, int nhands) {
     int i, suit, rank, cards;
 
     for (i = 0; i < nhands; i++)
@@ -1388,11 +1389,11 @@ void printhands(int boardno, Deal *dealp, int player, int nhands) {
     printf("\n");
 }
 
-float percent(int n, int d) {
+static float percent(int n, int d) {
     return 100 * n / (float)d;
 }
 
-void cleanup_action() {
+static void cleanup_action() {
     struct Action *acp;
     int player, i;
 

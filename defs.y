@@ -14,24 +14,24 @@ void clearpointcount_alt(int);
 void pointcount(int, int);
 void *mycalloc(unsigned, size_t);
 int make_contract(char, char);
-int d2n(char s[4]);
+static int d2n(char s[4]);
 int yylex();
 extern char *yytext;
 
-int predeal_compass; /* global variable for predeal communication */
+static int predeal_compass; /* global variable for predeal communication */
 
-int pointcount_index; /* global variable for pointcount communication */
+static int pointcount_index; /* global variable for pointcount communication */
 
-int shapeno;
+static int shapeno;
 
-struct Tree *var_lookup(char *s, int mustbethere);
-struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int, struct Tree *);
-struct Tree *newtree(int, struct Tree *, struct Tree *, int, int);
-struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1);
-void bias_deal(int suit, int compass, int length);
-void predeal_holding(int compass, char *holding);
-void insertshape(char s[4], int any, int neg_shape);
-void new_var(char *s, struct Tree *t);
+static struct Tree *var_lookup(char *s, int mustbethere);
+static struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int, struct Tree *);
+static struct Tree *newtree(int, struct Tree *, struct Tree *, int, int);
+static struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1);
+static void bias_deal(int suit, int compass, int length);
+static void predeal_holding(int compass, char *holding);
+static void insertshape(char s[4], int any, int neg_shape);
+static void new_var(char *s, struct Tree *t);
 
 extern int yylineno; // from scan.c
 %}
@@ -393,13 +393,13 @@ printlist
         ;
 %%
 
-struct var {
+static struct var {
     struct var *v_next;
     char *v_ident;
     struct Tree *v_tree;
 } *vars = 0;
 
-struct Tree *var_lookup(char *s, int mustbethere) {
+static struct Tree *var_lookup(char *s, int mustbethere) {
     struct var *v;
 
     for (v = vars; v != 0; v = v->v_next)
@@ -410,7 +410,7 @@ struct Tree *var_lookup(char *s, int mustbethere) {
     return 0;
 }
 
-void new_var(char *s, struct Tree *t) {
+static void new_var(char *s, struct Tree *t) {
     struct var *v;
     /* char *mycalloc(); */
 
@@ -428,7 +428,7 @@ void yyerror(const char *s) {
     exit(-1);
 }
 
-int perm[24][4] = {
+static int perm[24][4] = {
         {       0,      1,      2,      3       },
         {       0,      1,      3,      2       },
         {       0,      2,      1,      3       },
@@ -455,7 +455,7 @@ int perm[24][4] = {
         {       3,      2,      1,      0       },
 };
 
-void insertshape(char s[4], int any, int neg_shape) {
+static void insertshape(char s[4], int any, int neg_shape) {
     int i, j, p;
     int xcount = 0, ccount = 0;
     char copy_s[4];
@@ -493,14 +493,14 @@ void insertshape(char s[4], int any, int neg_shape) {
     }
 }
 
-int d2n(char s[4]) {
+static int d2n(char s[4]) {
     static char copys[5];
 
     strncpy(copys, s, 4);
     return atoi(copys);
 }
 
-struct Tree *newtree(int type, struct Tree *p1, struct Tree *p2, int i1, int i2) {
+static struct Tree *newtree(int type, struct Tree *p1, struct Tree *p2, int i1, int i2) {
     /* char *mycalloc(); */
     struct Tree *p;
 
@@ -513,7 +513,7 @@ struct Tree *newtree(int type, struct Tree *p1, struct Tree *p2, int i1, int i2)
     return p;
 }
 
-struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int i1, struct Tree *p2) {
+static struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int i1, struct Tree *p2) {
     /* char *mycalloc(); */
     struct Action *a;
 
@@ -526,7 +526,7 @@ struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int i1, str
     return a;
 }
 
-struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1) {
+static struct Expr *newexpr(struct Tree *tr1, char *ch1, struct Expr *ex1) {
     struct Expr *e;
     e = (struct Expr *)mycalloc(1, sizeof(*e));
     e->ex_tr = tr1;
@@ -550,7 +550,7 @@ char *mystrcpy(const char *s) {
     return cs;
 }
 
-void predeal_holding(int compass, char *holding) {
+static void predeal_holding(int compass, char *holding) {
     char suit;
 
     suit = *holding++;
@@ -564,17 +564,17 @@ void predeal_holding(int compass, char *holding) {
 
 static const char *suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
 
-int bias_len(int compass) {
+static int bias_len(int compass) {
     return TRUNCZ(biasdeal[compass][0]) + TRUNCZ(biasdeal[compass][1])
         + TRUNCZ(biasdeal[compass][2]) + TRUNCZ(biasdeal[compass][3]);
 }
 
-int bias_totsuit(int suit) {
+static int bias_totsuit(int suit) {
     return TRUNCZ(biasdeal[0][suit]) + TRUNCZ(biasdeal[1][suit])
         + TRUNCZ(biasdeal[2][suit]) + TRUNCZ(biasdeal[3][suit]);
 }
 
-void bias_deal(int suit, int compass, int length) {
+static void bias_deal(int suit, int compass, int length) {
     if (biasdeal[compass][suit] != -1) {
         char s[256];
         sprintf(s, "%s's %s suit has length already set to %d", player_name[compass],
