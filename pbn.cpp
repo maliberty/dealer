@@ -63,7 +63,7 @@ int printpbn(int board, Deal d) {
     for (player = COMPASS_NORTH; player <= COMPASS_WEST; player++) {
         for (suit = SUIT_SPADE; suit >= SUIT_CLUB; suit--) {
             for (rank = 12; rank >= 0; rank--) {
-                if (HAS_CARD(d, player, MAKECARD(suit, rank))) {
+                if (HAS_CARD(d, player, make_card(suit, rank))) {
                     printf("%c", representation[rank]);
                 }
             }

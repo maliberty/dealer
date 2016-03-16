@@ -24,7 +24,7 @@ basically a no-op.
 #include "c4.h"
 
 static int has_card2(int s, int r, int seat) {
-    return HAS_CARD(curdeal, seat, (Card)MAKECARD(s, r));
+    return HAS_CARD(curdeal, seat, (Card)make_card(s, r));
 }
 
 static int Rescale(int nValue) {

@@ -385,7 +385,7 @@ static void newpack(Deal d) {
     place = 0;
     for (suit = SUIT_CLUB; suit <= SUIT_SPADE; suit++)
         for (rank = 0; rank < 13; rank++)
-            d[place++] = MAKECARD(suit, rank);
+            d[place++] = make_card(suit, rank);
 }
 
 #ifdef FRANCOIS
@@ -439,7 +439,7 @@ Card make_card(char rankchar, char suitchar) {
         default:
             assert(0);
     }
-    return MAKECARD(suit, rank);
+    return make_card(suit, rank);
 }
 
 int make_contract(char suitchar, char trickchar) {
@@ -466,7 +466,7 @@ int make_contract(char suitchar, char trickchar) {
             printf("%c", suitchar);
             assert(0);
     }
-    return MAKECONTRACT(suit, trick);
+    return make_contract(suit, trick);
 }
 
 static void analyze(Deal d, Handstat *hsbase) {
@@ -529,8 +529,8 @@ static void analyze(Deal d, Handstat *hsbase) {
         next = 13 * player;
         for (c = 0; c < 13; c++) {
             curcard = d[next++];
-            s = C_SUIT(curcard);
-            r = C_RANK(curcard);
+            s = card_suit(curcard);
+            r = card_rank(curcard);
 
 /* Enable this #if to dump a visual look at the hands as they are
    analysed.  Best bet is to use test.all, or something else that
@@ -625,7 +625,7 @@ void fprintcompact(FILE *f, Deal d, int ononeline) {
         fprintf(f, "%c ", pt[p]);
         for (s = SUIT_SPADE; s >= SUIT_CLUB; s--) {
             for (r = 12; r >= 0; r--)
-                if (HAS_CARD(d, p, MAKECARD(s, r)))
+                if (HAS_CARD(d, p, make_card(s, r)))
                     fprintf(f, "%c", ucrep[r]);
             if (s > 0)
                 fprintf(f, ".");
@@ -649,7 +649,7 @@ static void printdeal(Deal d) {
             }
             cards = 0;
             for (rank = 12; rank >= 0; rank--) {
-                if (HAS_CARD(d, player, MAKECARD(suit, rank))) {
+                if (HAS_CARD(d, player, make_card(suit, rank))) {
                     printf("%c ", ucrep[rank]);
                     cards++;
                 }
@@ -786,7 +786,7 @@ static int shuffle(Deal d) {
                 for (rank = 0; rank < 13; ++rank) {
                     pn = su & 0x03;
                     su >>= 2;
-                    d[ph[pn]++] = MAKECARD(suit, 12 - rank);
+                    d[ph[pn]++] = make_card(suit, 12 - rank);
                 }
             }
             return 1;
@@ -882,8 +882,8 @@ void exh_set_bit_values(int bit_pos, Card onecard) {
     /* only sets up some tables (see table definitions above) */
     int suit, rank;
     int suitloop;
-    suit = C_SUIT(onecard);
-    rank = C_RANK(onecard);
+    suit = card_suit(onecard);
+    rank = card_rank(onecard);
     for (suitloop = SUIT_CLUB; suitloop <= SUIT_SPADE; suitloop++) {
         exh_suit_points_at_map[suitloop][bit_pos] = (suit == suitloop ? tblPointcount[0][rank] : 0);
         exh_suit_length_at_map[suitloop][bit_pos] = (suit == suitloop ? 1 : 0);
@@ -945,8 +945,8 @@ void exh_print_vector(Handstat *hs) {
     for (i = 0; i < 26; i++) {
         if (!(1 & (vectordeal >> i))) {
             onecard = exh_card_at_bit[i];
-            s = C_SUIT(onecard);
-            r = C_RANK(onecard);
+            s = card_suit(onecard);
+            r = card_rank(onecard);
             printf("%c%d ", ucrep[r], s);
         }
     }
@@ -957,8 +957,8 @@ void exh_print_vector(Handstat *hs) {
     for (i = 0; i < 26; i++) {
         if ((1 & (vectordeal >> i))) {
             onecard = exh_card_at_bit[i];
-            s = C_SUIT(onecard);
-            r = C_RANK(onecard);
+            s = card_suit(onecard);
+            r = card_rank(onecard);
             printf("%c%d ", ucrep[r], s);
         }
     }
@@ -1370,7 +1370,7 @@ static void printhands(int boardno, Deal *dealp, int player, int nhands) {
             }
             cards = 0;
             for (rank = 12; rank >= 0; rank--) {
-                if (HAS_CARD(dealp[i], player, MAKECARD(suit, rank))) {
+                if (HAS_CARD(dealp[i], player, make_card(suit, rank))) {
                     printf("%c ", ucrep[rank]);
                     cards++;
                 }
@@ -1491,7 +1491,7 @@ void printew(Deal d) {
                 }
                 cards = 0;
                 for (rank = 12; rank >= 0; rank--) {
-                    if (HAS_CARD(d, player, MAKECARD(suit, rank))) {
+                    if (HAS_CARD(d, player, make_card(suit, rank))) {
                         printf("%c ", ucrep[rank]);
                         cards++;
                     }

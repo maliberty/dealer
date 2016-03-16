@@ -72,19 +72,19 @@ inline int HAS_CARD(Deal d, int p, Card c) {
 }
 #endif
 
-inline Card MAKECARD(int suit, int rank) {
+inline Card make_card(int suit, int rank) {
     return (Card)((suit << 6) | rank);
 }
 
-inline int MAKECONTRACT(int suit, int tricks) {
+inline int make_contract(int suit, int tricks) {
     return tricks * 5 + suit;
 }
 
-inline int C_SUIT(Card c) {
+inline int card_suit(Card c) {
     return c >> 6;
 }
 
-inline int C_RANK(Card c) {
+inline int card_rank(Card c) {
     return c & 0x3F;
 }
 
