@@ -24,6 +24,8 @@ static int pointcount_index; /* global variable for pointcount communication */
 
 static int shapeno;
 
+static int biasdeal[4][4] = {{-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}};
+
 static struct Tree *var_lookup(char *s, int mustbethere);
 static struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int, struct Tree *);
 static struct Tree *newtree(int, struct Tree *, struct Tree *, int, int);

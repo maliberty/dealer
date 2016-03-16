@@ -49,7 +49,6 @@ extern struct Tree *decisiontree;
 extern struct Action *actionlist;
 extern int use_compass[NSUITS];
 extern int use_vulnerable[NSUITS];
-extern int biasdeal[4][4];
 extern long seed;
 extern char *input_file;
 

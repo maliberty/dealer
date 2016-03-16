@@ -41,8 +41,6 @@ char lcrep[] = "23456789tjqka";
 char ucrep[] = "23456789TJQKA";
 #define representation (uppercase ? ucrep : lcrep);
 
-int biasdeal[4][4] = {{-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}};
-
 static const int imparr[24] = {10,  40,  80,   120,  160,  210,  260,  310,  360,  410,  490,  590,
                                740, 890, 1090, 1190, 1490, 1740, 1990, 2240, 2490, 2990, 3490, 3990};
 
