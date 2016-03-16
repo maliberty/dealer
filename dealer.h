@@ -1,13 +1,11 @@
 #ifndef DEALER_H
 #define DEALER_H
 
+#include "pointcount.h"
+
 typedef unsigned char Card;
 
 typedef Card Deal[52];
-
-extern const char *player_name[4];
-
-extern int verbose;
 
 #ifdef STD_RAND
 #define RANDOM rand
@@ -18,8 +16,6 @@ int gnurand();
 #define SRANDOM(seed) gnusrand(seed)
 int gnusrand(unsigned int);
 #endif /* STD_RAND */
-
-#include "pointcount.h"
 
 struct Handstat {
     int hs_length[NSUITS];         /* distribution */
@@ -51,6 +47,8 @@ extern int use_compass[NSUITS];
 extern int use_vulnerable[NSUITS];
 extern long seed;
 extern char *input_file;
+extern const char *player_name[4];
+extern int verbose;
 
 extern void pointcount(int, int);
 extern void setshapebit(int, int, int, int, int, int);
@@ -59,6 +57,8 @@ extern void clearpointcount_alt(int);
 extern void predeal(int, Card);
 extern void *mycalloc(unsigned, size_t);
 extern void yyerror(const char *);
+extern Card make_card(char rankchar, char suitchar);
+extern int make_contract(char suitchar, char trickchar);
 
 #ifdef FRANCOIS
 int hascard(Deal, int, Card, int);
@@ -67,8 +67,5 @@ int hascard(Deal, int, Card, int);
 int hascard(Deal, int, Card);
 #define HAS_CARD(d, p, c) hascard(d, p, c)
 #endif
-
-Card make_card(char rankchar, char suitchar);
-extern int make_contract(char suitchar, char trickchar);
 
 #endif /* DEALER_H */

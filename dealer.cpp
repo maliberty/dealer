@@ -87,7 +87,6 @@ struct Tree *decisiontree = &defaulttree;
 struct Action *actionlist = &defaultaction;
 const char *player_name[] = {"North", "East", "South", "West"};
 
-
 #ifdef FRANCOIS
 /* Special variables for exhaustive mode
    Exhaustive mode created by Francois DELLACHERIE, 01-1999  */
@@ -110,7 +109,7 @@ int vectordeal;
 int exh_predealt_vector = 0;
 char exh_card_map[256];
 /* exh_card_map[card] is the coordinate of the card in the vector */
-card exh_card_at_bit[26];
+Card exh_card_at_bit[26];
 /* exh_card_at_bit[i] is the card pointed by the bit #i */
 unsigned char exh_player[2];
 /* the two players that have unknown cards */
@@ -878,7 +877,7 @@ void exh_get2players(void) {
     }
 }
 
-void exh_set_bit_values(int bit_pos, card onecard) {
+void exh_set_bit_values(int bit_pos, Card onecard) {
     /* only sets up some tables (see table definitions above) */
     int suit, rank;
     int suitloop;
@@ -900,7 +899,7 @@ void exh_setup_card_map(void) {
 }
 
 void exh_map_cards(void) {
-    register int i, i_player;
+    int i, i_player;
     int bit_pos;
 
     for (i = 0, bit_pos = 0; i < 52; i++) {
@@ -1644,7 +1643,8 @@ int main(int argc, char **argv) {
                o Tsize[ham13] will contain the number of such possible vectors: 13/(ham13!(13-ham13)!)
                o Tsize will be mirrored into c_tsize
              */
-            for (c_tsize[i = 13] = Tsize[i = 13] = 1, HAM_T[13] = (int *)malloc(sizeof(int)); i--;)
+            i = 13;
+            for (c_tsize[i] = Tsize[i] = 1, HAM_T[13] = (int *)malloc(sizeof(int)); i--;)
                 HAM_T[i] = (int *)malloc(sizeof(int) * (c_tsize[i] = Tsize[i] = Tsize[i + 1] * (i + 1) / (13 - i)));
             /*
                one generate the 2^13 possible half-vectors and :

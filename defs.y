@@ -6,14 +6,9 @@
 #include "dealer.h"
 
 static int d2n(char s[4]);
-
-static int predeal_compass; /* global variable for predeal communication */
-
-static int pointcount_index; /* global variable for pointcount communication */
-
+static int predeal_compass;
+static int pointcount_index;
 static int shapeno;
-
-static int biasdeal[4][4] = {{-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}};
 
 static struct Tree *var_lookup(char *s, int mustbethere);
 static struct Action *newaction(ActionType type, struct Tree *p1, char *s1, int, struct Tree *);
@@ -422,7 +417,7 @@ void yyerror(const char *s) {
     exit(-1);
 }
 
-static int perm[24][4] = {
+static const int perm[24][4] = {
         {       0,      1,      2,      3       },
         {       0,      1,      3,      2       },
         {       0,      2,      1,      3       },
@@ -548,18 +543,23 @@ static void predeal_holding(int compass, char *holding) {
     }
 }
 
-#define TRUNCZ(x) ((x) < 0 ? 0 : (x))
+inline int truncz(int x)
+{
+    return x < 0 ? 0 : x;
+}
 
 static const char *suit_name[] = {"Club", "Diamond", "Heart", "Spade"};
 
+static int biasdeal[4][4] = {{-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}, {-1, -1, -1, -1}};
+
 static int bias_len(int compass) {
-    return TRUNCZ(biasdeal[compass][0]) + TRUNCZ(biasdeal[compass][1])
-        + TRUNCZ(biasdeal[compass][2]) + TRUNCZ(biasdeal[compass][3]);
+    return truncz(biasdeal[compass][0]) + truncz(biasdeal[compass][1])
+        + truncz(biasdeal[compass][2]) + truncz(biasdeal[compass][3]);
 }
 
 static int bias_totsuit(int suit) {
-    return TRUNCZ(biasdeal[0][suit]) + TRUNCZ(biasdeal[1][suit])
-        + TRUNCZ(biasdeal[2][suit]) + TRUNCZ(biasdeal[3][suit]);
+    return truncz(biasdeal[0][suit]) + truncz(biasdeal[1][suit])
+        + truncz(biasdeal[2][suit]) + truncz(biasdeal[3][suit]);
 }
 
 static void bias_deal(int suit, int compass, int length) {
