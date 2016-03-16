@@ -3,9 +3,7 @@
 #include "tree.h"
 #include "dealer.h"
 
-void yyerror(const char *);
 static char *mystrcpy(const char *s);
-void *mycalloc(unsigned, size_t);
 %}
 
 %x COMMENT

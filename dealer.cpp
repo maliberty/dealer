@@ -5,9 +5,7 @@
 #include <string.h>
 #include <limits.h>
 
-long seed = 0;
 static int quiet = 0;
-char *input_file = 0;
 
 #include <netinet/in.h>
 #include <unistd.h>
@@ -20,8 +18,6 @@ char *input_file = 0;
 #include "c4.h"
 #include "pbn.h"
 
-void yyerror(const char *);
-
 #ifdef FRANCOIS
 static const int TWO_TO_THE_13 = (1 << 13);
 #endif
@@ -33,8 +29,6 @@ static const int NRANDVALS = (1 << RANDBITS);
 enum { STAT_MODE, EXHAUST_MODE };
 static const int DEFAULT_MODE = STAT_MODE;
 static int computing_mode = DEFAULT_MODE;
-
-const char *player_name[] = {"North", "East", "South", "West"};
 
 int uppercase = 0;
 char lcrep[] = "23456789tjqka";
@@ -73,22 +67,26 @@ static void fprintcompact(FILE *, Deal, int);
 static int trix(char);
 static void error(const char *);
 static void printew(Deal d);
-static int true_dd(Deal d, int l, int c); /* prototype */
+static int true_dd(Deal d, int l, int c);
 extern void yyparse();
 
 /* globals */
-int verbose;
-struct Handstat hs[4];
 Deal curdeal;
+struct Handstat hs[4];
+char *input_file = 0;
 int maxgenerate;
 int maxdealer;
-int maxvuln;
-int will_print;
 int maxproduce;
+int maxvuln;
+long seed = 0;
 int use_compass[NSUITS];
 int use_vulnerable[NSUITS];
+int verbose;
+int will_print;
 struct Tree *decisiontree = &defaulttree;
 struct Action *actionlist = &defaultaction;
+const char *player_name[] = {"North", "East", "South", "West"};
+
 
 #ifdef FRANCOIS
 /* Special variables for exhaustive mode

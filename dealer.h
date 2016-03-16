@@ -52,6 +52,14 @@ extern int use_vulnerable[NSUITS];
 extern long seed;
 extern char *input_file;
 
+extern void pointcount(int, int);
+extern void setshapebit(int, int, int, int, int, int);
+extern void clearpointcount(void);
+extern void clearpointcount_alt(int);
+extern void predeal(int, Card);
+extern void *mycalloc(unsigned, size_t);
+extern void yyerror(const char *);
+
 #ifdef FRANCOIS
 int hascard(Deal, int, Card, int);
 #define HAS_CARD(d, p, c) hascard(d, p, c, 0)
@@ -61,6 +69,6 @@ int hascard(Deal, int, Card);
 #endif
 
 Card make_card(char rankchar, char suitchar);
-int make_contract(char suitchar, char trickchar);
+extern int make_contract(char suitchar, char trickchar);
 
 #endif /* DEALER_H */

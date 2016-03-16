@@ -5,18 +5,7 @@
 #include "tree.h"
 #include "dealer.h"
 
-void yyerror(const char *);
-void setshapebit(int, int, int, int, int, int);
-void predeal(int, Card);
-Card make_card(char, char);
-void clearpointcount(void);
-void clearpointcount_alt(int);
-void pointcount(int, int);
-void *mycalloc(unsigned, size_t);
-int make_contract(char, char);
 static int d2n(char s[4]);
-int yylex();
-extern char *yytext;
 
 static int predeal_compass; /* global variable for predeal communication */
 
@@ -35,7 +24,10 @@ static void predeal_holding(int compass, char *holding);
 static void insertshape(char s[4], int any, int neg_shape);
 static void new_var(char *s, struct Tree *t);
 
-extern int yylineno; // from scan.c
+// from scan.cpp
+extern int yylineno;
+extern int yylex();
+extern char *yytext;
 %}
 
 
