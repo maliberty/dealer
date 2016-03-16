@@ -57,7 +57,7 @@ static int results[2][5][14];
 static int nprod;
 static int ngen;
 
-static Tree defaulttree = {TRT_NUMBER, NIL, NIL, 1, 0};
+static Tree defaulttree = {TreeType::Number, NIL, NIL, 1, 0};
 static Action defaultaction = {(Action *)0, ActionType::PrintAll};
 static unsigned char zero52[NRANDVALS];
 static Deal *deallist;
@@ -1053,168 +1053,168 @@ static int evaltree(const Tree *t) {
     switch (t->tr_type) {
         default:
             assert(0);
-        case TRT_NUMBER:
+        case TreeType::Number:
             return t->tr_int1;
-        case TRT_AND2:
+        case TreeType::And2:
             return evaltree(t->tr_leaf1) && evaltree(t->tr_leaf2);
-        case TRT_OR2:
+        case TreeType::Or2:
             return evaltree(t->tr_leaf1) || evaltree(t->tr_leaf2);
-        case TRT_ARPLUS:
+        case TreeType::ArPlus:
             return evaltree(t->tr_leaf1) + evaltree(t->tr_leaf2);
-        case TRT_ARMINUS:
+        case TreeType::ArMinus:
             return evaltree(t->tr_leaf1) - evaltree(t->tr_leaf2);
-        case TRT_ARTIMES:
+        case TreeType::Artimes:
             return evaltree(t->tr_leaf1) * evaltree(t->tr_leaf2);
-        case TRT_ARDIVIDE:
+        case TreeType::ArDivide:
             return evaltree(t->tr_leaf1) / evaltree(t->tr_leaf2);
-        case TRT_ARMOD:
+        case TreeType::ArMod:
             return evaltree(t->tr_leaf1) % evaltree(t->tr_leaf2);
-        case TRT_CMPEQ:
+        case TreeType::CmpEQ:
             return evaltree(t->tr_leaf1) == evaltree(t->tr_leaf2);
-        case TRT_CMPNE:
+        case TreeType::CmpNE:
             return evaltree(t->tr_leaf1) != evaltree(t->tr_leaf2);
-        case TRT_CMPLT:
+        case TreeType::CmpLT:
             return evaltree(t->tr_leaf1) < evaltree(t->tr_leaf2);
-        case TRT_CMPLE:
+        case TreeType::CmpLE:
             return evaltree(t->tr_leaf1) <= evaltree(t->tr_leaf2);
-        case TRT_CMPGT:
+        case TreeType::CmpGT:
             return evaltree(t->tr_leaf1) > evaltree(t->tr_leaf2);
-        case TRT_CMPGE:
+        case TreeType::CmpGE:
             return evaltree(t->tr_leaf1) >= evaltree(t->tr_leaf2);
-        case TRT_NOT:
+        case TreeType::Not:
             return !evaltree(t->tr_leaf1);
-        case TRT_LENGTH: /* suit, compass */
+        case TreeType::Length: /* suit, compass */
             assert(t->tr_int1 >= SUIT_CLUB && t->tr_int1 <= SUIT_SPADE);
             assert(t->tr_int2 >= COMPASS_NORTH && t->tr_int2 <= COMPASS_WEST);
             return hs[t->tr_int2].hs_length[t->tr_int1];
-        case TRT_HCPTOTAL: /* compass */
+        case TreeType::HcpTotal: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalhcp;
-        case TRT_DISTPTSTOTAL: /* compass */
+        case TreeType::DistPtsTotal: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totaldist;
-        case TRT_PT0TOTAL: /* compass */
+        case TreeType::Pt0Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxTens];
-        case TRT_PT1TOTAL: /* compass */
+        case TreeType::Pt1Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxJacks];
-        case TRT_PT2TOTAL: /* compass */
+        case TreeType::Pt2Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxQueens];
-        case TRT_PT3TOTAL: /* compass */
+        case TreeType::Pt3Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxKings];
-        case TRT_PT4TOTAL: /* compass */
+        case TreeType::Pt4Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxAces];
-        case TRT_PT5TOTAL: /* compass */
+        case TreeType::Pt5Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxTop2];
-        case TRT_PT6TOTAL: /* compass */
+        case TreeType::Pt6Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxTop3];
-        case TRT_PT7TOTAL: /* compass */
+        case TreeType::Pt7Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxTop4];
-        case TRT_PT8TOTAL: /* compass */
+        case TreeType::Pt8Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxTop5];
-        case TRT_PT9TOTAL: /* compass */
+        case TreeType::Pt9Total: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcounts[idxC13];
-        case TRT_HCP: /* compass, suit */
+        case TreeType::Hcp: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_hcp[t->tr_int2];
-        case TRT_DISTPTS: /* compass, suit */
+        case TreeType::DistPts: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_dist[t->tr_int2];
-        case TRT_PT0: /* compass, suit */
+        case TreeType::Pt0: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxTens][t->tr_int2];
-        case TRT_PT1: /* compass, suit */
+        case TreeType::Pt1: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxJacks][t->tr_int2];
-        case TRT_PT2: /* compass, suit */
+        case TreeType::Pt2: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxQueens][t->tr_int2];
-        case TRT_PT3: /* compass, suit */
+        case TreeType::Pt3: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxKings][t->tr_int2];
-        case TRT_PT4: /* compass, suit */
+        case TreeType::Pt4: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxAces][t->tr_int2];
-        case TRT_PT5: /* compass, suit */
+        case TreeType::Pt5: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxTop2][t->tr_int2];
-        case TRT_PT6: /* compass, suit */
+        case TreeType::Pt6: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxTop3][t->tr_int2];
-        case TRT_PT7: /* compass, suit */
+        case TreeType::Pt7: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxTop4][t->tr_int2];
-        case TRT_PT8: /* compass, suit */
+        case TreeType::Pt8: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxTop5][t->tr_int2];
-        case TRT_PT9: /* compass, suit */
+        case TreeType::Pt9: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_counts[idxC13][t->tr_int2];
-        case TRT_SHAPE: /* compass, shapemask */
+        case TreeType::Shape: /* compass, shapemask */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return (hs[t->tr_int1].hs_bits & t->tr_int2) != 0;
-        case TRT_HASCARD: /* compass, card */
+        case TreeType::HasCard: /* compass, card */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
 #ifdef FRANCOIS
             return hascard(curdeal, t->tr_int1, (Card)t->tr_int2, vectordeal);
 #else
             return hascard(curdeal, t->tr_int1, (Card)t->tr_int2);
 #endif                       /* FRANCOIS */
-        case TRT_LOSERTOTAL: /* compass */
+        case TreeType::LoserTotal: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalloser;
-        case TRT_LOSER: /* compass, suit */
+        case TreeType::Loser: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_loser[t->tr_int2];
-        case TRT_CONTROLTOTAL: /* compass */
+        case TreeType::ControlTotal: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalcontrol;
-        case TRT_CONTROL: /* compass, suit */
+        case TreeType::Control: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return hs[t->tr_int1].hs_control[t->tr_int2];
-        case TRT_CCCC:
+        case TreeType::Cccc:
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return cccc(t->tr_int1);
-        case TRT_QUALITY:
+        case TreeType::Quality:
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= SUIT_SPADE);
             return quality(t->tr_int1, t->tr_int2);
-        case TRT_IF:
-            assert(t->tr_leaf2->tr_type == TRT_THENELSE);
+        case TreeType::If:
+            assert(t->tr_leaf2->tr_type == TreeType::ThenElse);
             return (evaltree(t->tr_leaf1) ? evaltree(t->tr_leaf2->tr_leaf1) : evaltree(t->tr_leaf2->tr_leaf2));
-        case TRT_TRICKS: /* compass, suit */
+        case TreeType::Tricks: /* compass, suit */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             assert(t->tr_int2 >= SUIT_CLUB && t->tr_int2 <= 1 + SUIT_SPADE);
             return dd(curdeal, t->tr_int1, t->tr_int2);
-        case TRT_SCORE: /* vul/non_vul, contract, tricks in leaf1 */
+        case TreeType::Score: /* vul/non_vul, contract, tricks in leaf1 */
             assert(t->tr_int1 >= NON_VUL && t->tr_int1 <= VUL);
             return score(t->tr_int1, t->tr_int2 % 5, t->tr_int2 / 5, evaltree(t->tr_leaf1));
-        case TRT_IMPS:
+        case TreeType::Imps:
             return imps(evaltree(t->tr_leaf1));
-        case TRT_RND:
+        case TreeType::Rnd:
             return (int)(((double)evaltree(t->tr_leaf1)) * RANDOM() / (RAND_MAX + 1.0));
     }
 }

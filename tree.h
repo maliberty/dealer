@@ -4,21 +4,6 @@
  * decision tree and other expression stuff
  */
 
-struct Tree {
-    int tr_type;
-    const Tree *tr_leaf1, *tr_leaf2;
-    int tr_int1;
-    int tr_int2;
-};
-
-struct Expr {
-    const Tree *ex_tr;
-    char *ex_ch;
-    Expr *next;
-};
-
-extern const Tree *NIL;
-
 #define SUIT_CLUB 0
 #define SUIT_DIAMOND 1
 #define SUIT_HEART 2
@@ -39,60 +24,77 @@ extern const Tree *NIL;
 #define NON_VUL 0
 #define VUL 1
 
-#define TRT_NUMBER 0
-#define TRT_AND2 1
-#define TRT_OR2 2
-#define TRT_CMPEQ 3
-#define TRT_CMPNE 4
-#define TRT_CMPLT 5
-#define TRT_CMPLE 6
-#define TRT_CMPGT 7
-#define TRT_CMPGE 8
-#define TRT_LENGTH 9
-#define TRT_ARPLUS 10
-#define TRT_ARMINUS 11
-#define TRT_ARTIMES 12
-#define TRT_ARDIVIDE 13
-#define TRT_ARMOD 14
-#define TRT_HCPTOTAL 15
-#define TRT_HCP 16
-#define TRT_SHAPE 17
-#define TRT_NOT 18
-#define TRT_HASCARD 19
-#define TRT_IF 20
-#define TRT_THENELSE 21
-#define TRT_LOSERTOTAL 22
-#define TRT_LOSER 23
-#define TRT_TRICKS 24
-#define TRT_RND 25
-#define TRT_CONTROL 26
-#define TRT_CONTROLTOTAL 27
-#define TRT_SCORE 28
-#define TRT_IMPS 29
-#define TRT_CCCC 30
-#define TRT_QUALITY 31
-#define TRT_PT0TOTAL 32
-#define TRT_PT0 33
-#define TRT_PT1TOTAL 34
-#define TRT_PT1 35
-#define TRT_PT2TOTAL 36
-#define TRT_PT2 37
-#define TRT_PT3TOTAL 38
-#define TRT_PT3 39
-#define TRT_PT4TOTAL 40
-#define TRT_PT4 41
-#define TRT_PT5TOTAL 42
-#define TRT_PT5 43
-#define TRT_PT6TOTAL 44
-#define TRT_PT6 45
-#define TRT_PT7TOTAL 46
-#define TRT_PT7 47
-#define TRT_PT8TOTAL 48
-#define TRT_PT8 49
-#define TRT_PT9TOTAL 50
-#define TRT_PT9 51
-#define TRT_DISTPTS 52
-#define TRT_DISTPTSTOTAL 53
+enum class TreeType {
+    Number,
+    And2,
+    Or2,
+    CmpEQ,
+    CmpNE,
+    CmpLT,
+    CmpLE,
+    CmpGT,
+    CmpGE,
+    Length,
+    ArPlus,
+    ArMinus,
+    Artimes,
+    ArDivide,
+    ArMod,
+    HcpTotal,
+    Hcp,
+    Shape,
+    Not,
+    HasCard,
+    If,
+    ThenElse,
+    LoserTotal,
+    Loser,
+    Tricks,
+    Rnd,
+    Control,
+    ControlTotal,
+    Score,
+    Imps,
+    Cccc,
+    Quality,
+    Pt0Total,
+    Pt0,
+    Pt1Total,
+    Pt1,
+    Pt2Total,
+    Pt2,
+    Pt3Total,
+    Pt3,
+    Pt4Total,
+    Pt4,
+    Pt5Total,
+    Pt5,
+    Pt6Total,
+    Pt6,
+    Pt7Total,
+    Pt7,
+    Pt8Total,
+    Pt8,
+    Pt9Total,
+    Pt9,
+    DistPts,
+    DistPtsTotal,
+};
+
+struct Tree {
+    TreeType tr_type;
+    const Tree *tr_leaf1, *tr_leaf2;
+    int tr_int1;
+    int tr_int2;
+};
+
+struct Expr {
+    const Tree *ex_tr;
+    char *ex_ch;
+    Expr *next;
+};
+
+extern const Tree *NIL;
 
 /*
  * Actions to be taken

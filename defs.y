@@ -12,7 +12,7 @@ static int shapeno;
 
 static Tree *var_lookup(char *s, int mustbethere);
 static Action *newaction(ActionType type, const Tree *p1, char *s1, int, const Tree *);
-static Tree *newtree(int, const Tree *, const Tree *, int, int);
+static Tree *newtree(TreeType, const Tree *, const Tree *, int, int);
 static Expr *newexpr(Tree *tr1, char *ch1, Expr *ex1);
 static void bias_deal(int suit, int compass, int length);
 static void predeal_holding(int compass, char *holding);
@@ -181,123 +181,123 @@ shapelist
 
 expr
         : number
-                { $$ = newtree(TRT_NUMBER, NIL, NIL, $1, 0); }
+                { $$ = newtree(TreeType::Number, NIL, NIL, $1, 0); }
         | IDENT
                 { $$ = var_lookup($1, 1); }
         | SUIT '(' compass ')'
-                { $$ = newtree(TRT_LENGTH, NIL, NIL, $1, $3); }
+                { $$ = newtree(TreeType::Length, NIL, NIL, $1, $3); }
         | HCP '(' compass ')'
-                { $$ = newtree(TRT_HCPTOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::HcpTotal, NIL, NIL, $3, 0); }
         | HCP '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_HCP, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Hcp, NIL, NIL, $3, $5); }
         | DISTPTS '(' compass ')'
-                { $$ = newtree(TRT_DISTPTSTOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::DistPtsTotal, NIL, NIL, $3, 0); }
         | DISTPTS '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_DISTPTS, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::DistPts, NIL, NIL, $3, $5); }
         | PT0 '(' compass ')'
-                { $$ = newtree(TRT_PT0TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt0Total, NIL, NIL, $3, 0); }
         | PT0 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT0, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt0, NIL, NIL, $3, $5); }
         | PT1 '(' compass ')'
-                { $$ = newtree(TRT_PT1TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt1Total, NIL, NIL, $3, 0); }
         | PT1 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT1, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt1, NIL, NIL, $3, $5); }
         | PT2 '(' compass ')'
-                { $$ = newtree(TRT_PT2TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt2Total, NIL, NIL, $3, 0); }
         | PT2 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT2, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt2, NIL, NIL, $3, $5); }
         | PT3 '(' compass ')'
-                { $$ = newtree(TRT_PT3TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt3Total, NIL, NIL, $3, 0); }
         | PT3 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT3, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt3, NIL, NIL, $3, $5); }
         | PT4 '(' compass ')'
-                { $$ = newtree(TRT_PT4TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt4Total, NIL, NIL, $3, 0); }
         | PT4 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT4, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt4, NIL, NIL, $3, $5); }
         | PT5 '(' compass ')'
-                { $$ = newtree(TRT_PT5TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt5Total, NIL, NIL, $3, 0); }
         | PT5 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT5, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt5, NIL, NIL, $3, $5); }
         | PT6 '(' compass ')'
-                { $$ = newtree(TRT_PT6TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt6Total, NIL, NIL, $3, 0); }
         | PT6 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT6, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt6, NIL, NIL, $3, $5); }
         | PT7 '(' compass ')'
-                { $$ = newtree(TRT_PT7TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt7Total, NIL, NIL, $3, 0); }
         | PT7 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT7, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt7, NIL, NIL, $3, $5); }
         | PT8 '(' compass ')'
-                { $$ = newtree(TRT_PT8TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt8Total, NIL, NIL, $3, 0); }
         | PT8 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT8, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt8, NIL, NIL, $3, $5); }
         | PT9 '(' compass ')'
-                { $$ = newtree(TRT_PT9TOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Pt9Total, NIL, NIL, $3, 0); }
         | PT9 '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_PT9, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Pt9, NIL, NIL, $3, $5); }
         | LOSER '(' compass ')'
-                { $$ = newtree(TRT_LOSERTOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::LoserTotal, NIL, NIL, $3, 0); }
         | LOSER '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_LOSER, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Loser, NIL, NIL, $3, $5); }
         | CONTROL '(' compass ')'
-                { $$ = newtree(TRT_CONTROLTOTAL, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::ControlTotal, NIL, NIL, $3, 0); }
         | CONTROL '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_CONTROL, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Control, NIL, NIL, $3, $5); }
         | CCCC '(' compass ')'
-                { $$ = newtree(TRT_CCCC, NIL, NIL, $3, 0); }
+                { $$ = newtree(TreeType::Cccc, NIL, NIL, $3, 0); }
         | QUALITY '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_QUALITY, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Quality, NIL, NIL, $3, $5); }
         | SHAPE '(' compass ',' shapelist ')'
                 {
-          $$ = newtree(TRT_SHAPE, NIL, NIL, $3, 1<<(shapeno++));
+          $$ = newtree(TreeType::Shape, NIL, NIL, $3, 1<<(shapeno++));
           if (shapeno >= 32) {
             yyerror("Too many shapes -- only 32 allowed!\n");
             YYERROR;
           }
         }
         | HASCARD '(' COMPASS ',' CARD ')'
-                { $$ = newtree(TRT_HASCARD, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::HasCard, NIL, NIL, $3, $5); }
         | TRICKS '(' compass ',' SUIT ')'
-                { $$ = newtree(TRT_TRICKS, NIL, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Tricks, NIL, NIL, $3, $5); }
         | TRICKS '(' compass ',' NOTRUMPS ')'
-                { $$ = newtree(TRT_TRICKS, NIL, NIL, $3, 4); }
+                { $$ = newtree(TreeType::Tricks, NIL, NIL, $3, 4); }
         | SCORE '(' VULN ',' CONTRACT ',' expr ')'
-                { $$ = newtree(TRT_SCORE, $7, NIL, $3, $5); }
+                { $$ = newtree(TreeType::Score, $7, NIL, $3, $5); }
         | IMPS '(' expr ')'
-                { $$ = newtree(TRT_IMPS, $3, NIL, 0, 0); }
+                { $$ = newtree(TreeType::Imps, $3, NIL, 0, 0); }
         | '(' expr ')'
                 { $$ = $2; }
         | expr CMPEQ expr
-                { $$ = newtree(TRT_CMPEQ, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::CmpEQ, $1, $3, 0, 0); }
         | expr CMPNE expr
-                { $$ = newtree(TRT_CMPNE, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::CmpNE, $1, $3, 0, 0); }
         | expr CMPLT expr
-                { $$ = newtree(TRT_CMPLT, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::CmpLT, $1, $3, 0, 0); }
         | expr CMPLE expr
-                { $$ = newtree(TRT_CMPLE, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::CmpLE, $1, $3, 0, 0); }
         | expr CMPGT expr
-                { $$ = newtree(TRT_CMPGT, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::CmpGT, $1, $3, 0, 0); }
         | expr CMPGE expr
-                { $$ = newtree(TRT_CMPGE, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::CmpGE, $1, $3, 0, 0); }
         | expr AND2 expr
-                { $$ = newtree(TRT_AND2, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::And2, $1, $3, 0, 0); }
         | expr OR2 expr
-                { $$ = newtree(TRT_OR2, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::Or2, $1, $3, 0, 0); }
         | expr ARPLUS expr
-                { $$ = newtree(TRT_ARPLUS, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::ArPlus, $1, $3, 0, 0); }
         | expr ARMINUS expr
-                { $$ = newtree(TRT_ARMINUS, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::ArMinus, $1, $3, 0, 0); }
         | expr ARTIMES expr
-                { $$ = newtree(TRT_ARTIMES, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::Artimes, $1, $3, 0, 0); }
         | expr ARDIVIDE expr
-                { $$ = newtree(TRT_ARDIVIDE, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::ArDivide, $1, $3, 0, 0); }
         | expr ARMOD expr
-                { $$ = newtree(TRT_ARMOD, $1, $3, 0, 0); }
+                { $$ = newtree(TreeType::ArMod, $1, $3, 0, 0); }
         | expr QUERY expr COLON expr
-                { $$ = newtree(TRT_IF, $1, newtree(TRT_THENELSE, $3, $5, 0, 0), 0, 0); }
+                { $$ = newtree(TreeType::If, $1, newtree(TreeType::ThenElse, $3, $5, 0, 0), 0, 0); }
         | NOT expr
-                { $$ = newtree(TRT_NOT, $2, NIL, 0, 0); }
+                { $$ = newtree(TreeType::Not, $2, NIL, 0, 0); }
         | RND '(' expr ')'
-                { $$ = newtree(TRT_RND, $3, NIL, 0, 0); }
+                { $$ = newtree(TreeType::Rnd, $3, NIL, 0, 0); }
         ;
 
 exprlist
@@ -489,7 +489,7 @@ static int d2n(char s[4]) {
     return atoi(copys);
 }
 
-static Tree *newtree(int type, const Tree *p1, const Tree *p2, int i1, int i2) {
+static Tree *newtree(TreeType type, const Tree *p1, const Tree *p2, int i1, int i2) {
     /* char *mycalloc(); */
     Tree *p;
 
