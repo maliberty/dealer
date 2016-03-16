@@ -23,23 +23,87 @@ basically a no-op.
 #include "dealer.h"
 #include "c4.h"
 
-int has_card2(int s, int r, int seat) {
+static int has_card2(int s, int r, int seat) {
     return HAS_CARD(curdeal, seat, (Card)MAKECARD(s, r));
 }
 
-int Rescale(int nValue) {
+static int Rescale(int nValue) {
     return nValue;
 }
 
-int cccc(int seat) {
-    return Rescale(eval_cccc(seat));
+static int suit_quality(int seat, int suit) {
+    int Quality = 0;
+
+    int Length = hs[seat].hs_length[suit];
+
+    int HasAce = has_card2(suit, RK_ACE, seat);
+    int HasKing = has_card2(suit, RK_KING, seat);
+    int HasQueen = has_card2(suit, RK_QUEEN, seat);
+    int HasJack = has_card2(suit, RK_JACK, seat);
+    int HasTen = has_card2(suit, RK_TEN, seat);
+    int HasNine = has_card2(suit, RK_NINE, seat);
+    int HasEight = has_card2(suit, RK_EIGHT, seat);
+
+    int HigherHonors = 0;
+
+    int SuitFactor = Length * 10;
+
+    /*ACE*/
+    if (HasAce) {
+        Quality += 4 * SuitFactor;
+        HigherHonors++;
+    }
+
+    /*KING*/
+    if (HasKing) {
+        Quality += 3 * SuitFactor;
+        HigherHonors++;
+    }
+
+    /*QUEEN*/
+    if (HasQueen) {
+        Quality += 2 * SuitFactor;
+        HigherHonors++;
+    }
+
+    /*JACK*/
+    if (HasJack) {
+        Quality += 1 * SuitFactor;
+        HigherHonors++;
+    }
+
+    if (Length > 6) {
+        int ReplaceCount = 3;
+        if (HasQueen)
+            ReplaceCount -= 2;
+        if (HasJack)
+            ReplaceCount -= 1;
+
+        if (ReplaceCount > (Length - 6))
+            ReplaceCount = Length - 6;
+
+        Quality += ReplaceCount * SuitFactor;
+    } else /* this.Length <= 6 */
+    {
+        if (HasTen) {
+            if ((HigherHonors > 1) || HasJack)
+                Quality += SuitFactor;
+            else
+                Quality += SuitFactor / 2;
+        }
+
+        if (HasNine) {
+            if ((HigherHonors == 2) || HasTen || HasEight)
+                Quality += SuitFactor / 2;
+        }
+    }
+
+    assert((Quality % 5) == 0);
+
+    return Quality;
 }
 
-int quality(int seat, int suit) {
-    return Rescale(suit_quality(seat, suit));
-}
-
-int eval_cccc(int seat) {
+static int eval_cccc(int seat) {
     int eval = 0;
     int ShapePoints = 0;
 
@@ -117,74 +181,10 @@ int eval_cccc(int seat) {
     return Rescale(eval);
 }
 
-int suit_quality(int seat, int suit) {
-    int Quality = 0;
+int cccc(int seat) {
+    return Rescale(eval_cccc(seat));
+}
 
-    int Length = hs[seat].hs_length[suit];
-
-    int HasAce = has_card2(suit, RK_ACE, seat);
-    int HasKing = has_card2(suit, RK_KING, seat);
-    int HasQueen = has_card2(suit, RK_QUEEN, seat);
-    int HasJack = has_card2(suit, RK_JACK, seat);
-    int HasTen = has_card2(suit, RK_TEN, seat);
-    int HasNine = has_card2(suit, RK_NINE, seat);
-    int HasEight = has_card2(suit, RK_EIGHT, seat);
-
-    int HigherHonors = 0;
-
-    int SuitFactor = Length * 10;
-
-    /*ACE*/
-    if (HasAce) {
-        Quality += 4 * SuitFactor;
-        HigherHonors++;
-    }
-
-    /*KING*/
-    if (HasKing) {
-        Quality += 3 * SuitFactor;
-        HigherHonors++;
-    }
-
-    /*QUEEN*/
-    if (HasQueen) {
-        Quality += 2 * SuitFactor;
-        HigherHonors++;
-    }
-
-    /*JACK*/
-    if (HasJack) {
-        Quality += 1 * SuitFactor;
-        HigherHonors++;
-    }
-
-    if (Length > 6) {
-        int ReplaceCount = 3;
-        if (HasQueen)
-            ReplaceCount -= 2;
-        if (HasJack)
-            ReplaceCount -= 1;
-
-        if (ReplaceCount > (Length - 6))
-            ReplaceCount = Length - 6;
-
-        Quality += ReplaceCount * SuitFactor;
-    } else /* this.Length <= 6 */
-    {
-        if (HasTen) {
-            if ((HigherHonors > 1) || HasJack)
-                Quality += SuitFactor;
-            else
-                Quality += SuitFactor / 2;
-        }
-
-        if (HasNine) {
-            if ((HigherHonors == 2) || HasTen || HasEight)
-                Quality += SuitFactor / 2;
-        }
-    }
-
-    assert((Quality % 5) == 0);
-
-    return Quality;
+int quality(int seat, int suit) {
+    return Rescale(suit_quality(seat, suit));
 }
