@@ -12,8 +12,8 @@ static int shapeno;
 static int use_vulnerable[NSUITS];
 
 static Tree *var_lookup(char *s, int mustbethere);
-static Action *newaction(ActionType type, const Tree *p1, char *s1, int, const Tree *);
-static Tree *newtree(TreeType, const Tree *, const Tree *, int, int);
+static Action *newaction(ActionType type, const Tree *p1, char *s1, int i1, const Tree *p2);
+static Tree *newtree(TreeType type, const Tree *p1, const Tree *p2, int i1, int i2);
 static Expr *newexpr(Tree *tr1, char *ch1, Expr *ex1);
 static void bias_deal(int suit, int compass, int length);
 static void predeal_holding(int compass, char *holding);

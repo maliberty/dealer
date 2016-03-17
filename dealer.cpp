@@ -849,7 +849,7 @@ static int shuffle(Deal d) {
 #ifdef FRANCOIS
 /* Specific routines for EXHAUST_MODE */
 
-void exh_get2players(void) {
+void exh_get2players() {
     /* Just finds who are the 2 players for whom we make exhaustive dealing */
     int player, player_bit;
     for (player = COMPASS_NORTH, player_bit = 0; player <= COMPASS_WEST; player++) {
@@ -891,14 +891,14 @@ void exh_set_bit_values(int bit_pos, Card onecard) {
     exh_card_at_bit[bit_pos] = onecard;
 }
 
-void exh_setup_card_map(void) {
+void exh_setup_card_map() {
     int i;
     for (i = 0; i < 256; i++) {
         exh_card_map[i] = -1; /* undefined */
     }
 }
 
-void exh_map_cards(void) {
+void exh_map_cards() {
     int i, i_player;
     int bit_pos;
 
@@ -1179,7 +1179,7 @@ static int evaltree(const Tree *t) {
             return hascard(curdeal, t->tr_int1, (Card)t->tr_int2, vectordeal);
 #else
             return hascard(curdeal, t->tr_int1, (Card)t->tr_int2);
-#endif                       /* FRANCOIS */
+#endif                             /* FRANCOIS */
         case TreeType::LoserTotal: /* compass */
             assert(t->tr_int1 >= COMPASS_NORTH && t->tr_int1 <= COMPASS_WEST);
             return hs[t->tr_int1].hs_totalloser;

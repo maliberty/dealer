@@ -49,23 +49,23 @@ extern char *input_file;
 extern const char *player_name[4];
 extern int verbose;
 
-extern void pointcount(int, int);
-extern void setshapebit(int, int, int, int, int, int);
-extern void clearpointcount(void);
-extern void clearpointcount_alt(int);
-extern void predeal(int, Card);
-extern void *mycalloc(unsigned, size_t);
-extern void yyerror(const char *);
+extern void pointcount(int index, int value);
+extern void setshapebit(int cl, int di, int ht, int sp, int msk, int excepted);
+extern void clearpointcount();
+extern void clearpointcount_alt(int cin);
+extern void predeal(int player, Card onecard);
+extern void *mycalloc(unsigned nel, size_t siz);
+extern void yyerror(const char *s);
 extern Card make_card(char rankchar, char suitchar);
 extern int make_contract(char suitchar, char trickchar);
 
 #ifdef FRANCOIS
-int hascard(Deal, int, Card, int);
+int hascard(Deal d, int player, Card onecard, int vectordeal);
 inline int HAS_CARD(Deal d, int p, Card c) {
     return hascard(d, p, c, 0);
 }
 #else
-int hascard(Deal, int, Card);
+int hascard(Deal d, int player, Card onecard);
 inline int HAS_CARD(Deal d, int p, Card c) {
     return hascard(d, p, c);
 }
