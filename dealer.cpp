@@ -73,15 +73,14 @@ extern void yyparse();
 /* globals */
 Deal curdeal;
 Handstat hs[4];
-char *input_file = 0;
+const char *input_file = 0;
 int maxgenerate;
 int maxdealer;
 int maxproduce;
 int maxvuln;
 long seed = 0;
-int use_compass[NSUITS];
-int verbose;
-int will_print;
+bool use_compass[NSUITS];
+bool will_print;
 Tree *decisiontree = &defaulttree;
 Action *actionlist = &defaultaction;
 const char *player_name[] = {"North", "East", "South", "West"};
@@ -480,7 +479,7 @@ static void analyze(Deal d, Handstat *hsbase) {
     for (player = COMPASS_NORTH; player <= COMPASS_WEST; ++player) {
         /* If the expressions in the input never mention a player
            we do not calculate his hand statistics. */
-        if (use_compass[player] == 0) {
+        if (!use_compass[player]) {
 #ifdef _DEBUG
             /* In debug mode, blast the unused handstat, so that we can recognize it
                as garbage should if we accidently read from it */
@@ -1515,7 +1514,7 @@ int main(int argc, char **argv) {
 
     timeval tvstart, tvstop;
 
-    verbose = 1;
+    bool verbose = false;
 
     gettimeofday(&tvstart, (void *)0);
 
@@ -1560,7 +1559,7 @@ int main(int argc, char **argv) {
                 uppercase = 1;
                 break;
             case 'v':
-                verbose ^= 1;
+                verbose = true;
                 break;
             case 'q':
                 quiet ^= 1;

@@ -24,9 +24,6 @@ int printpbn(int board, Deal d) {
     char timearray[12];
     int player, suit, rank;
 
-    /* Suppress verbose output unless we really want it */
-    verbose ^= 1;
-
     printf("[Event \"Hand simulated by dealer with file %s, seed %lu\"]\n", input_file, seed);
 
     printf("[Site \"-\"]\n");

@@ -40,14 +40,13 @@ extern int maxgenerate;
 extern int maxdealer;
 extern int maxvuln;
 extern int maxproduce;
-extern int will_print;
+extern bool will_print;
 extern Tree *decisiontree;
 extern Action *actionlist;
-extern int use_compass[NSUITS];
+extern bool use_compass[NSUITS];
 extern long seed;
-extern char *input_file;
+extern const char *input_file;
 extern const char *player_name[4];
-extern int verbose;
 
 extern void pointcount(int index, int value);
 extern void setshapebit(int cl, int di, int ht, int sp, int msk, int excepted);

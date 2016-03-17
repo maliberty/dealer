@@ -28,12 +28,12 @@ extern char *yytext;
 
 
 %union {
-        int     y_int;
-        char    *y_str;
-        struct Tree *y_tree;
-        struct Action *y_action;
-        struct Expr   *y_expr;
-        char    y_distr[4];
+        int             y_int;
+        char *          y_str;
+        struct Tree *   y_tree;
+        struct Action * y_action;
+        struct Expr *   y_expr;
+        char            y_distr[4];
 }
 
 %left QUERY COLON
@@ -131,7 +131,7 @@ pointcountargs
 
 compass
         : COMPASS
-                { use_compass[$1] = 1; $$= $1; }
+                { use_compass[$1] = true; $$= $1; }
         ;
 
 vulnerable
@@ -322,37 +322,37 @@ actionlist
         ;
 action
         : PRINTALL
-                { will_print++;
+                { will_print = true;
                   $$ = newaction(ActionType::PrintAll, NIL, (char *) 0, 0, NIL);
                 }
         | PRINTEW
-                { will_print++;
+                { will_print = true;
                   $$ = newaction(ActionType::PrintEW, NIL, (char *) 0, 0, NIL);
                 }
         | PRINT '(' printlist ')'
-                { will_print++;
+                { will_print = true;
                   $$ = newaction(ActionType::Print, NIL, (char *) 0, $3, NIL);
                 }
         | PRINTCOMPACT
-                { will_print++;
+                { will_print = true;
                   $$=newaction(ActionType::PrintCompact,NIL,0,0, NIL);}
         | PRINTONELINE
-                { will_print++;
+                { will_print = true;
                   $$ = newaction(ActionType::PrintOneLine, NIL, 0, 0, NIL);}
         | PRINTPBN
-                { will_print++;
+                { will_print = true;
                   $$=newaction(ActionType::PrintPBN,NIL,0,0, NIL);}
         | PRINTES '(' exprlist ')'
-                { will_print++;
+                { will_print = true;
                   $$=newaction(ActionType::PrintES,(Tree*) $3, 0, 0, NIL); }
         | EVALCONTRACT  /* should allow user to specify vuln, suit, decl */
-                { will_print++;
+                { will_print = true;
                   $$=newaction(ActionType::EvalContract,0,0,0, NIL);}
         | PRINTCOMPACT '(' expr ')'
-                { will_print++;
+                { will_print = true;
                   $$=newaction(ActionType::PrintCompact,$3,0,0, NIL);}
         | PRINTONELINE '(' expr ')'
-                { will_print++;
+                { will_print = true;
                   $$=newaction(ActionType::PrintOneLine,$3,0,0, NIL);}
         | AVERAGE optstring expr
                 { $$ = newaction(ActionType::Average, $3, $2, 0, NIL); }

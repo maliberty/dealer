@@ -17,7 +17,7 @@ foreach $input (`ls Descr.*`) {
   $refer  = $input;
   $refer  =~ s/Descr/Refer/;
 
-  system ("$exe -s $seed $input >$output");
+  system ("$exe -v -s $seed $input >$output");
 
   print "Done, output in $output\n";
 
