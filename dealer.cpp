@@ -80,7 +80,6 @@ int maxproduce;
 int maxvuln;
 long seed = 0;
 int use_compass[NSUITS];
-int use_vulnerable[NSUITS];
 int verbose;
 int will_print;
 Tree *decisiontree = &defaulttree;

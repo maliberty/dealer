@@ -44,7 +44,6 @@ extern int will_print;
 extern Tree *decisiontree;
 extern Action *actionlist;
 extern int use_compass[NSUITS];
-extern int use_vulnerable[NSUITS];
 extern long seed;
 extern char *input_file;
 extern const char *player_name[4];

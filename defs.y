@@ -9,6 +9,7 @@ static int d2n(char s[4]);
 static int predeal_compass;
 static int pointcount_index;
 static int shapeno;
+static int use_vulnerable[NSUITS];
 
 static Tree *var_lookup(char *s, int mustbethere);
 static Action *newaction(ActionType type, const Tree *p1, char *s1, int, const Tree *);
